@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-arabic: var(--font-noto-kufi);
+  --font-arabic-title: var(--font-cairo);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-arabic), Arial, Helvetica, sans-serif;
+  text-align: right;
+}
+
+/* تنسيق للخط العربي للعناوين */
+.arabic-title {
+  font-family: var(--font-arabic-title), Arial, Helvetica, sans-serif;
+  letter-spacing: 0.025em;
+  font-weight: 700;
+  text-rendering: optimizeLegibility;
+}
+
+/* تنسيقات إضافية للخطوط */
+.fancy-text {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* دعم الاتجاه من اليمين إلى اليسار */
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
+/* Final and most comprehensive Quill Editor RTL List Alignment Fixes */
+.ql-editor {
+  direction: rtl; /* Ensure editor content is RTL */
+  text-align: right; /* Align text to the right by default */
+}
+
+.ql-editor ol,
+.ql-editor ul {
+  padding: 0;
+  margin: 0;
+  list-style-position: outside; /* Critical for correct RTL list behavior */
+}
+
+.ql-editor li {
+  margin: 0;
+  padding-left: 0; /* Reset default padding */
+  text-align: right; /* Align text content to the right */
+  position: relative;
+  list-style-position: outside;
+  padding-right: 2em; /* Space for the marker and a bit more */
+}
+
+.ql-snow .ql-editor ol > li:before,
+.ql-snow .ql-editor ul > li:before {
+  right: 0;
+  left: auto;
+  margin-right: -2em; /* Pull the marker into the padding-right space */
+  text-align: left; /* Align the marker itself to the left of its position */
+  width: 2em; /* Ensure enough space for the marker */
+}
+
+/* Indentation levels for RTL */
+.ql-editor .ql-indent-1 {
+  margin-right: 3.5em; /* Base indentation + marker space */
+}
+
+.ql-editor .ql-indent-2 {
+  margin-right: 5em;
+}
+
+.ql-editor .ql-indent-3 {
+  margin-right: 6.5em;
+}
+
+.ql-editor .ql-indent-4 {
+  margin-right: 8em;
+}
+
+.ql-editor .ql-indent-5 {
+  margin-right: 9.5em;
+}
+
+.ql-editor .ql-indent-6 {
+  margin-right: 11em;
+}
+
+.ql-editor .ql-indent-7 {
+  margin-right: 12.5em;
+}
+
+.ql-editor .ql-indent-8 {
+  margin-right: 14em;
+}
+
+/* NEW QUILL TOOLBAR STYLES - Hide dropdown indicators (arrows) */
+.ql-toolbar .ql-picker.ql-header .ql-picker-indicator,
+.ql-toolbar .ql-picker.ql-size .ql-picker-indicator {
+  display: none !important; /* Hide the arrow */
+}
+
+/* Adjust label padding to compensate for removed arrow space */
+.ql-toolbar .ql-picker.ql-header .ql-picker-label,
+.ql-toolbar .ql-picker.ql-size .ql-picker-label {
+  padding-right: 0.5em !important; /* Add some padding to the right for aesthetics */
+  padding-left: 0.5em !important; /* Add some padding to the left for aesthetics */
+}
+
+/* CSS for image alignment from quill-blot-formatter2 */
+
+div.ql-editor {
+    --blot-align-left-margin: 0.5rem 1rem 0.5rem 0;
+    --blot-align-center-margin: 1rem auto;
+    --blot-align-right-margin: 0.5rem 0 0.5rem 1rem;
+}
+
+/* image wrapper common */
+div.ql-editor [class^="ql-image-align-"] {
+    display: flex; /* This makes it a flex container */
+    flex-wrap: wrap;
+    width: var(--resize-width);
+    max-width: 100%;
+    align-items: center; /* Vertically center image if content has varying heights */
+}
+
+/* The image itself within the flex container */
+div.ql-editor [class^="ql-image-align-"]>img {
+    /* flex: 1; */ /* Removed because it causes the image to fill the entire space, preventing flex alignment of the wrapper */
+    max-width: 100%; /* Ensure image doesn't overflow its container */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* left */
+div.ql-editor .ql-image-align-left,
+div.ql-editor .ql-iframe-align-left {
+    margin: var(--blot-align-left-margin);
+    /* float: left; */ /* Remove as it conflicts with display: flex on the parent */
+    justify-content: flex-start; /* Align to start (left) within flex container */
+}
+
+/* centre */
+div.ql-editor .ql-image-align-center,
+div.ql-editor .ql-iframe-align-center {
+    margin: var(--blot-align-center-margin); /* Keep this as it's part of blot-formatter's centering logic */
+    justify-content: center; /* Center horizontally within flex container */
+}
+
+/* right */
+div.ql-editor .ql-image-align-right,
+div.ql-editor .ql-iframe-align-right {
+    margin: var(--blot-align-right-margin);
+    /* float: right; */ /* Remove as it conflicts with display: flex on the parent */
+    justify-content: flex-end; /* Align to end (right) within flex container */
+}
+
+/* image caption (optional, if you want captions) */
+div.ql-editor [class^="ql-image-align-"][data-title] {
+    margin-bottom: 0;
+}
+
+div.ql-editor [class^="ql-image-align-"][data-title]::after {
+    content: attr(data-title);
+    padding: 0.25rem 0.2rem;
+    font-size: 0.9rem;
+    line-height: 1.1;
+    background-color: white;
+    width: 100%;
+}
+
+/* remove text decoration on caption when image linked */
+a:has([class^="ql-image-align-"]>img) {
+    text-decoration: none !important;
+}
+
+/* left */
+div.ql-editor .ql-image-align-left[data-title]::after {
+    text-align: left;
+}
+
+/* center */
+div.ql-editor .ql-image-align-center[data-title]::after {
+    text-align: center;
+}
+
+/* right */
+div.ql-editor .ql-image-align-right[data-title]::after {
+    text-align: right;
+}
+
+/* Ensure images within Quill editor are inline-block for proper alignment (Tailwind conflict) */
+div.ql-editor img {
+  display: inline-block !important; /* Keep this for Tailwind conflict */
+}
