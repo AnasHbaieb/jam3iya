@@ -2,15 +2,24 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { ContactMessage } from '@/actions/contactActions';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // إزالة تعريف إجراء الخادم المحلي
 
 export default async function ContactRequests() {
-  // جلب الرسائل من قاعدة البيانات
-  const messages: ContactMessage[] = await prisma.contactMessage.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  let messages: ContactMessage[] = [];
+  try {
+    // جلب الرسائل من قاعدة البيانات
+    messages = await prisma.contactMessage.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching contact messages during prerendering:", error);
+    // يمكنك هنا التعامل مع الخطأ بشكل أكثر تفصيلاً إذا لزم الأمر
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
