@@ -1,13 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-
-interface ContactMessage {
-  id: number;
-  name: string;
-  email: string;
-  message: string;
-  createdAt: Date;
-}
+import { ContactMessage } from '@/actions/contactActions';
 
 // إزالة تعريف إجراء الخادم المحلي
 

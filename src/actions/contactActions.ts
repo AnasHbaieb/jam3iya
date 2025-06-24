@@ -2,6 +2,15 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { hadUnsupportedValue } from 'next/dist/build/analysis/get-page-static-info';
+
+export interface ContactMessage {
+  id: number;
+  name: string;
+  email: string;
+  message: string;
+  createdAt: Date;
+}
 
 // تعريف دالة لإنشاء رسالة جديدة
 export async function createMessage(formData: FormData): Promise<{ success?: boolean; error?: string }> {
