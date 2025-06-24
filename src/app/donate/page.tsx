@@ -1,11 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { products } from "../data/products";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function DonatePage() {
+export default function DonatePageWrapper() {
+  return (
+    <Suspense fallback={<div>جاري التحميل...</div>}>
+      <DonatePage />
+    </Suspense>
+  );
+}
+
+function DonatePage() {
   const [success, setSuccess] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -109,3 +117,4 @@ export default function DonatePage() {
     </div>
   );
 }
+

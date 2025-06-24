@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 
 interface ContactMessage {
-  id: string;
+  id: number;
   name: string;
   email: string;
   message: string;

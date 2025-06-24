@@ -77,9 +77,10 @@ export async function GET() {
       }
     });
     return NextResponse.json(products);
-  } catch (err: unknown) {
+  } catch (error) {
+    console.error('Error fetching products:', error);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to fetch products'},
+      { error: 'Failed to fetch products'},
       { status: 500 }
     );
   }

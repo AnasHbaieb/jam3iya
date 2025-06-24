@@ -1,5 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
 export default function RaportsPage() {
   const [content, setContent] = useState('');
@@ -14,7 +16,7 @@ export default function RaportsPage() {
           const data = await res.json();
           setContent(data.content);
         } else if (res.status === 404) {
-          setContent('No content available for this page yet.');
+          setContent('لا يوجد محتوى متاح لهذه الصفحة بعد.');
         } else {
           setError('Failed to fetch content.');
         }
@@ -38,11 +40,15 @@ export default function RaportsPage() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">التقارير</h1>
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <div className="text-gray-700 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: content }} />
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <div className="container mx-auto p-4 flex-grow">
+        <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">التقارير</h1>
+        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
+          <div className="text-gray-700 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: content }} />
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

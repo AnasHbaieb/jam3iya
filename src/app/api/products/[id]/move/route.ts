@@ -1,16 +1,19 @@
-import { NextResponse } from 'next/server';
-import { Prisma } from '@prisma/client';
+import { NextResponse, NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma';
 
-
-
+interface Move{
+  currentRang:number
+  targetRang:number
+  targetProductId:number
+}
 export async function PUT(
-  request: Request,
-  context: { params: { id: number } }
-) {
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) { 
   try {
-    const { currentRang, targetRang, targetProductId } = await request.json();
-    const currentProductId = context.params.id;
+    const { currentRang, targetRang, targetProductId }: Move = await request.json();
+    const currentProductId = Number((await params).id);
+
 
     if (isNaN(currentProductId) || !targetProductId) {
       return NextResponse.json(
@@ -26,7 +29,6 @@ export async function PUT(
       );
     }
 
-    // Get both products in a transaction to ensure consistency
     const [currentProduct, targetProduct] = await prisma.$transaction([
       prisma.product.findUnique({ where: { id: currentProductId } }),
       prisma.product.findUnique({ where: { id: targetProductId } })
@@ -39,45 +41,34 @@ export async function PUT(
       );
     }
 
-    // Log the current state for debugging
     console.log('Moving product:', {
-      currentProduct: { id: currentProduct.id, rang: currentProduct.rang, name: currentProduct.name },
-      targetProduct: { id: targetProduct.id, rang: targetProduct.rang, name: targetProduct.name },
+      currentProduct: { id: currentProduct.id, rang: currentProduct.rang },
+      targetProduct: { id: targetProduct.id, rang: targetProduct.rang },
       currentRang,
       targetRang
     });
 
-    // Update both products in a transaction
     await prisma.$transaction([
-      // First, set current product's rang to a temporary value to avoid unique constraint violation
       prisma.product.update({
         where: { id: currentProductId },
         data: { rang: -1 },
       }),
-      // Then update the target product
       prisma.product.update({
         where: { id: targetProductId },
         data: { rang: currentRang },
       }),
-      // Finally, update the current product to the target rang
       prisma.product.update({
         where: { id: currentProductId },
         data: { rang: targetRang },
       })
     ]);
 
-    // Get updated products to verify
     const [updatedCurrent, updatedTarget] = await prisma.$transaction([
       prisma.product.findUnique({ where: { id: currentProductId } }),
       prisma.product.findUnique({ where: { id: targetProductId } })
     ]);
 
-    console.log('After move:', {
-      currentProduct: updatedCurrent ? { id: updatedCurrent.id, rang: updatedCurrent.rang } : 'Not found',
-      targetProduct: updatedTarget ? { id: updatedTarget.id, rang: updatedTarget.rang } : 'Not found'
-    });
-
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       currentProduct: { id: updatedCurrent?.id, rang: updatedCurrent?.rang },
       targetProduct: { id: updatedTarget?.id, rang: updatedTarget?.rang }
@@ -85,18 +76,16 @@ export async function PUT(
 
   } catch (error) {
     console.error('Error updating product order:', error);
-    
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2002') {
-        return NextResponse.json(
-          { error: 'A product with this position already exists. Please refresh and try again.' },
-          { status: 409 }
-        );
-      }
+
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A product with this position already exists. Please refresh and try again.' },
+        { status: 409 }
+      );
     }
-    
+
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to update product order',
         details: error instanceof Error ? error.message : 'Unknown error'
       },

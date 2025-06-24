@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 
 const RichTextEditor = dynamic(() => import('../../../components/RichTextEditor'), { ssr: false });
@@ -85,6 +86,9 @@ export default function AdminRaportsPage() {
           >
             {loading ? 'جارٍ الحفظ...' : 'حفظ المحتوى'}
           </button>
+          <Link href="/admin/nous" className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            الرجوع
+          </Link>
         </div>
         {message && <p className="mt-4 text-center text-sm font-semibold text-gray-600">{message}</p>}
       </form>

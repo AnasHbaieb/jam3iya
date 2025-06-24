@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse} from "next/server";
 import { prisma } from '@/lib/prisma';
 import { writeFile, unlink } from "fs/promises";
 import { existsSync, mkdirSync } from "fs";
@@ -6,10 +6,10 @@ import { join } from "path";
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string }}
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = parseInt(params.id);
+        const id = parseInt((await params).id);
         const product = await prisma.product.findUnique({
             where: { id },
         });
@@ -33,12 +33,12 @@ export async function GET(
 
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string }}
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        console.log('Update request received for product ID:', params.id);
+        console.log('Update request received for product ID:', (await params).id);
         
-        const id = parseInt(params.id);
+        const id = Number((await params).id);
         const formData = await request.formData();
 
         console.log('Received FormData:', Object.fromEntries(formData.entries()));
@@ -124,10 +124,10 @@ export async function PUT(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string }}
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id = parseInt(params.id);
+        const id = parseInt((await params).id);
         const product = await prisma.product.delete({
             where: { id },
         });
