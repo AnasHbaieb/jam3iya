@@ -14,6 +14,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const [mounted, setMounted] = useState(false);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     setMounted(true);
@@ -96,7 +101,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
 
       quillRef.current.on('text-change', () => {
         if (quillRef.current) {
-          onChange(quillRef.current.root.innerHTML);
+          onChangeRef.current(quillRef.current.root.innerHTML);
         }
       });
 
@@ -111,7 +116,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
         quillRef.current = null;
       }
     };
-  }, [mounted, onChange, value]);
+  }, [mounted]);
 
   useEffect(() => {
     if (quillRef.current && value !== quillRef.current.root.innerHTML) {
