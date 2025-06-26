@@ -62,7 +62,7 @@ export async function PUT(
                 { status: 404 }
             );
         }
-
+        postgresql://postgres:[YOUR-PASSWORD]@db.yvqdhlnwsuwsdscjxuvs.supabase.co:5432/postgres
         console.log('Existing product:', existingProduct);
 
         let imageUrl = existingProduct.imageUrl;

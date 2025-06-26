@@ -36,6 +36,10 @@ export default function ProductCard({
                     </div>
                 )}
             </div>
+            <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800">{name}</h3>
+                <p className="text-gray-600 text-sm mt-1 line-clamp-1">{description}</p>
+            </div>
         </div>
 
         {/* Modal للصورة والوصف */}
@@ -51,6 +55,12 @@ export default function ProductCard({
                         />
                     </div>
                     <div className="p-6">
+                        <button 
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-2 left-2 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold"
+                        >
+                            X
+                        </button>
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">{name}</h2>
                         <p className="text-gray-600 text-lg mb-4">{description}</p>
                         {category && (
@@ -58,12 +68,6 @@ export default function ProductCard({
                                 {category}
                             </div>
                         )}
-                        <button 
-                            onClick={() => setIsModalOpen(false)}
-                            className="mt-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-                        >
-                            إغلاق
-                        </button>
                     </div>
                 </div>
             </div>
