@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -64,7 +65,7 @@ export default function Header() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                            <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                                 <div className="py-1">
                                     <Link href="/nous/about" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">تعريف الجمعية</Link>
                                     <Link href="/Contact" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">اتصل بنا</Link>
@@ -114,20 +115,25 @@ export default function Header() {
                 </div>
                 {menuOpen && (
                     <div className="md:hidden mt-4 flex flex-col gap-4 bg-white rounded shadow p-4">
-                        <div className="relative group">
-                            <button className="text-gray-700 hover:text-amber-600 font-bold text-xl flex items-center mb-2">
+                        <div className="relative">
+                            <button 
+                                className="text-gray-700 hover:text-amber-600 font-bold text-xl flex items-center mb-2"
+                                onClick={() => setAboutMenuOpen(!aboutMenuOpen)}
+                            >
                                 من نحن
-                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className={`w-4 h-4 mr-1 transition-transform ${aboutMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div className="flex flex-col gap-1 pl-4">
-                                <Link href="/nous/about" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">تعريف الجمعية</Link>
-                                <Link href="/Contact" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">اتصل بنا</Link>
-                                <Link href="/nous/haykal" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الهيكل الإداري</Link>
-                                <Link href="/nous/engagement" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الانخراط</Link>
-                                <Link href="/nous/raports" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">التقارير السنوية</Link>
-                            </div>
+                            {aboutMenuOpen && (
+                                <div className="flex flex-col gap-1 pl-4">
+                                    <Link href="/nous/about" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">تعريف الجمعية</Link>
+                                    <Link href="/Contact" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">اتصل بنا</Link>
+                                    <Link href="/nous/haykal" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الهيكل الإداري</Link>
+                                    <Link href="/nous/engagement" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الانخراط</Link>
+                                    <Link href="/nous/raports" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">التقارير السنوية</Link>
+                                </div>
+                            )}
                         </div>
                         <Link href="/produits" className="text-gray-700 hover:text-amber-600 font-bold text-xl">
                             المشاريع

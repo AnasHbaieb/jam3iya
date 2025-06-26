@@ -23,7 +23,7 @@ export default function ProductCard({
     return (
         <>
         <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <div className="relative h-49 w-full cursor-pointer" onClick={() => setIsModalOpen(true)}>
+            <div className="relative h-64 w-full cursor-pointer" onClick={() => setIsModalOpen(true)}>
                 <Image 
                     src={imageUrl || '/default-image.jpg'}
                     alt={name}

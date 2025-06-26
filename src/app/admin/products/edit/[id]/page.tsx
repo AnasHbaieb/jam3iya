@@ -15,7 +15,6 @@ export default function EditProductPage() {
     description: '',
     category: '',
     isNew: false,
-    rang: 1 ,
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -38,7 +37,6 @@ export default function EditProductPage() {
           description: productData.description,
           category: productData.category,
           isNew: productData.isNew,
-          rang: productData.rang,
         });
 
         if (productData.imageUrl) {
@@ -85,7 +83,6 @@ export default function EditProductPage() {
       form.append('description', formData.description);
       form.append('category', formData.category);
       form.append('isNew', String(formData.isNew));
-      form.append('rang', String(formData.rang));
 
       if (imageFile) {
         form.append('image', imageFile);
@@ -149,21 +146,6 @@ export default function EditProductPage() {
               id="name"
               name="name"
               value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-            />
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="name" className="block text-sm font-medium text-amber-700 mb-1">
-             rang
-            </label>
-            <input
-              type="text"
-              id="rang"
-              name="rang"
-              value={formData.rang}
               onChange={handleChange}
               required
               className="w-full px-4 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"

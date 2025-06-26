@@ -27,13 +27,13 @@ export default async function ContactRequests() {
         <h1 className="text-3xl font-bold mb-6 text-green-700">إدارة طلبات العملاء</h1>
         
         <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-200 text-right">
+        <table className="min-w-full bg-white border border-gray-200 text-right table-fixed">
             <thead>
               <tr>
-                <th className="py-4 px-6 border-b">الاسم</th>
-                <th className="py-4 px-6 border-b">البريد الإلكتروني</th>
-                <th className="py-4 px-6 border-b">الرسالة</th>
-                <th className="py-4 px-6 border-b">تاريخ الإرسال</th>
+                <th className="py-2 px-2 sm:py-4 sm:px-6 border-b text-wrap">الاسم</th>
+                <th className="py-2 px-2 sm:py-4 sm:px-6 border-b text-wrap">البريد الإلكتروني</th>
+                <th className="py-2 px-2 sm:py-4 sm:px-6 border-b text-wrap">الرسالة</th>
+                <th className="py-2 px-2 sm:py-4 sm:px-6 border-b text-wrap">تاريخ الإرسال</th>
               </tr>
             </thead>
             <tbody>
@@ -46,10 +46,10 @@ export default async function ContactRequests() {
               ) : (
                 messages.map((message: ContactMessage) => (
                   <tr key={message.id}>
-                    <td className="py-2 px-4 border-b">{message.name}</td>
-                    <td className="py-2 px-4 border-b">{message.email}</td>
-                    <td className="py-2 px-4 border-b">{message.message}</td>
-                    <td className="py-2 px-4 border-b">{new Date(message.createdAt).toLocaleString()}</td>
+                    <td className="py-2 px-2 sm:py-2 sm:px-4 border-b break-words text-xs sm:text-sm">{message.name}</td>
+                    <td className="py-2 px-2 sm:py-2 sm:px-4 border-b break-words text-xs sm:text-sm">{message.email}</td>
+                    <td className="py-2 px-2 sm:py-2 sm:px-4 border-b break-words text-xs sm:text-sm">{message.message}</td>
+                    <td className="py-2 px-2 sm:py-2 sm:px-4 border-b break-words text-xs sm:text-sm">{new Date(message.createdAt).toLocaleString()}</td>
                   </tr>
                 ))
               )}

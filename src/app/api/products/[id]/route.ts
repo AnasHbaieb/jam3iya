@@ -48,9 +48,8 @@ export async function PUT(
         const category = formData.get('category') as string;
         const isNew = formData.get('isNew') as string;
         const imageFile = formData.get('image') as File | null;
-        const rang = parseInt(formData.get('rang') as string) || 0;
 
-        console.log('Parsed values:', { id, name, description, category, isNew, rang });
+        console.log('Parsed values:', { id, name, description, category, isNew });
 
         const existingProduct = await prisma.product.findUnique({
             where: { id },
@@ -104,7 +103,6 @@ export async function PUT(
             category: category || existingProduct.category,
             isNew: isNew === 'true' || existingProduct.isNew,
             imageUrl: imageUrl || existingProduct.imageUrl,
-            rang: rang || existingProduct.rang,
         };
 
         const updatedProduct = await prisma.product.update({

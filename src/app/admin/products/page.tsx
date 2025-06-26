@@ -18,7 +18,7 @@ export interface Product {
   updatedAt: Date;
   rang: number;
 }
-//salem ch7alek labes ha4i risala nasia 3ala sari3 sari3 w ma4aherli bech ta93ad ama i4a 9a3dat ra
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +45,7 @@ export default function ProductsPage() {
     };
     fetchProducts();
   }, []);
+
   //Delete
   const handleDelete = async (id: number) => {
     const confirmed = confirm('هل أنت متأكد أنك تريد حذف هذا المشروع؟');
@@ -157,9 +158,8 @@ export default function ProductsPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500">
-          Loading...
-        </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <span className="ml-3 text-gray-600">جاري التحميل...</span>
       </div>
     );
   }
@@ -175,54 +175,37 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-6xl mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-amber-600">إدارة المشاريع</h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-amber-600">إدارة المشاريع</h1>
           <Link
             href="/admin/products/add"
-            className="bg-amber-600 hover:bg-amber-600 text-white font-medium py-3 px-6 rounded-lg transition duration-300"
+            className="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition duration-300 text-center"
           >
             إضافة مشروع جديد
           </Link>
         </div>
-        <Link href="/admin" className="text-green-700 hover:underline">
-          ارجع للإدارة→
-        </Link>
+        
+        <div className="mb-6">
+          <Link href="/admin" className="text-green-700 hover:underline text-sm sm:text-base">
+            ← ارجع للإدارة
+          </Link>
+        </div>
+
         {products.length === 0 ? (
           <div className="bg-green-50 border border-green-400 text-green-800 p-6 rounded-lg text-center">
             لا توجد المشاريع. قم بإضافة أول مشروع!
           </div>
         ) : (
           <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-100">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-green-50">
-                <tr>
-                  <th className="px-8 py-4 text-right text-sm font-semibold text-green-800 tracking-wider">
-                    الصورة
-                  </th>
-                  <th className="px-8 py-4 text-right text-sm font-semibold text-green-800 tracking-wider">
-                    الاسم
-                  </th>
-                  <th className="px-8 py-4 text-right text-sm font-semibold text-green-800 tracking-wider">
-                    الوصف
-                  </th>
-                  <th className="px-8 py-4 text-right text-sm font-semibold text-green-800 tracking-wider">
-                    الفئة
-                  </th>
-                  <th className="px-8 py-4 text-right text-sm font-semibold text-green-800 tracking-wider">
-                    مشروع يحدث الان
-                  </th>
-                  <th className="px-8 py-4 text-right text-sm font-semibold text-green-800 tracking-wider">
-                    الإجراءات
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-100">
-                {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 transition duration-200">
-                    <td className="px-8 py-6 whitespace-nowrap">
-                      <div className="h-20 w-20 relative">
+            {/* Mobile view - Cards */}
+            <div className="block md:hidden">
+              {products.map((product) => (
+                <div key={product.id} className="border-b border-gray-200 p-4">
+                  <div className="flex items-start space-x-4 space-x-reverse">
+                    <div className="flex-shrink-0">
+                      <div className="h-16 w-16 relative">
                         {product.imageUrl ? (
                           <Image
                             src={product.imageUrl}
@@ -231,68 +214,175 @@ export default function ProductsPage() {
                             className="object-cover rounded-lg"
                           />
                         ) : (
-                          <div className="h-20 w-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
+                          <div className="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
                             لا توجد صورة
                           </div>
                         )}
                       </div>
-                    </td>
-                    <td className="px-8 py-6 whitespace-nowrap">
-                      <div className="text-base font-medium text-green-700">{product.name}</div>
-                    </td>
-                    <td className="px-8 py-6">
-                      <div className="text-base font-medium text-green-700">{product.description}</div>
-                    </td>
-                    <td className="px-8 py-6 whitespace-nowrap">
-                      <div className="text-base font-medium text-green-700">{product.category}</div>
-                    </td>
-                    <td className="px-8 py-6 whitespace-nowrap">
-                      <div className="text-base font-medium text-green-700">
-                        {product.isNew ? 'نعم' : 'لا'}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-medium text-green-700 mb-1">{product.name}</h3>
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{product.category}</span>
+                        {product.isNew && (
+                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded">مشروع يحدث الان</span>
+                        )}
                       </div>
-                    </td>
-                    <td className="px-8 py-6 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center gap-2">
+                      
+                      {/* Mobile Actions */}
+                      <div className="flex items-center gap-2 mt-3">
                         <button
                           onClick={() => handleMoveUp(product.id)}
-                          disabled={product.rang === 0} // Disable for the first item
-                          className={`p-2 rounded-md transition duration-300 ${product.rang === 0
+                          disabled={product.rang === 0}
+                          className={`p-2 rounded-md transition duration-300 ${
+                            product.rang === 0
                               ? 'text-gray-300 cursor-not-allowed bg-gray-50'
                               : 'text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100'
-                            }`}
+                          }`}
                           title={product.rang === 0 ? 'المنتج في الأعلى' : 'نقل للأعلى'}
                         >
-                          <FaArrowUp size={16} />
+                          <FaArrowUp size={14} />
                         </button>
                         <button
                           onClick={() => handleMoveDown(product.id)}
-                          disabled={product.rang === products.length - 1} // Disable for the last item
-                          className={`p-2 rounded-md transition duration-300 ${product.rang === products.length - 1
+                          disabled={product.rang === products.length - 1}
+                          className={`p-2 rounded-md transition duration-300 ${
+                            product.rang === products.length - 1
                               ? 'text-gray-300 cursor-not-allowed bg-gray-50'
                               : 'text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100'
-                            }`}
+                          }`}
                           title={product.rang === products.length - 1 ? 'المنتج في الأسفل' : 'نقل للأسفل'}
                         >
-                          <FaArrowDown size={16} />
+                          <FaArrowDown size={14} />
                         </button>
                         <Link
                           href={`/admin/products/edit/${product.id}`}
-                          className="text-amber-700 hover:text-amber-600 bg-amber-50 px-4 py-2 rounded-md ml-4 transition duration-300"
+                          className="text-amber-700 hover:text-amber-600 bg-amber-50 px-3 py-1 rounded-md text-sm transition duration-300"
                         >
                           تعديل
                         </Link>
                         <button
                           onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-700 bg-red-50 px-4 py-2 rounded-md transition duration-300"
+                          className="text-red-600 hover:text-red-700 bg-red-50 px-3 py-1 rounded-md text-sm transition duration-300"
                         >
                           حذف
                         </button>
                       </div>
-                    </td>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop view - Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-green-50">
+                  <tr>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-20">
+                      الصورة
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider">
+                      الاسم
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider">
+                      الوصف
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-32">
+                      الفئة
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-32">
+                      مشروع يحدث الان
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-48">
+                      الإجراءات
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-100">
+                  {products.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50 transition duration-200">
+                      <td className="px-4 py-3">
+                        <div className="h-16 w-16 relative">
+                          {product.imageUrl ? (
+                            <Image
+                              src={product.imageUrl}
+                              alt={product.name}
+                              fill
+                              className="object-cover rounded-lg"
+                            />
+                          ) : (
+                            <div className="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                              لا توجد صورة
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-green-700 text-sm">{product.name}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-gray-700 text-sm max-w-xs truncate">{product.description}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-gray-700 text-sm">{product.category}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-sm">
+                          {product.isNew ? (
+                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">نعم</span>
+                          ) : (
+                            <span className="text-gray-500">لا</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleMoveUp(product.id)}
+                            disabled={product.rang === 0}
+                            className={`p-2 rounded-md transition duration-300 ${
+                              product.rang === 0
+                                ? 'text-gray-300 cursor-not-allowed bg-gray-50'
+                                : 'text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100'
+                            }`}
+                            title={product.rang === 0 ? 'المنتج في الأعلى' : 'نقل للأعلى'}
+                          >
+                            <FaArrowUp size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleMoveDown(product.id)}
+                            disabled={product.rang === products.length - 1}
+                            className={`p-2 rounded-md transition duration-300 ${
+                              product.rang === products.length - 1
+                                ? 'text-gray-300 cursor-not-allowed bg-gray-50'
+                                : 'text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100'
+                            }`}
+                            title={product.rang === products.length - 1 ? 'المنتج في الأسفل' : 'نقل للأسفل'}
+                          >
+                            <FaArrowDown size={14} />
+                          </button>
+                          <Link
+                            href={`/admin/products/edit/${product.id}`}
+                            className="text-amber-700 hover:text-amber-600 bg-amber-50 px-3 py-1 rounded-md text-sm transition duration-300"
+                          >
+                            تعديل
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(product.id)}
+                            className="text-red-600 hover:text-red-700 bg-red-50 px-3 py-1 rounded-md text-sm transition duration-300"
+                          >
+                            حذف
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
