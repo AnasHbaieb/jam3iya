@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Noto_Kufi_Arabic, Cairo } from "next/font/google";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -46,6 +47,7 @@ export default function RootLayout({
     <html lang="ar" dir="rtl">
       <body className={`${geistSans.variable} ${geistMono.variable} ${notoKufiArabic.variable} ${cairo.variable} antialiased`}>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
