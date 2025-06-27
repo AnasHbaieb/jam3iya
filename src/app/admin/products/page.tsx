@@ -212,6 +212,7 @@ export default function ProductsPage() {
                             alt={product.name}
                             fill
                             className="object-cover rounded-lg"
+                            unoptimized={product.imageUrl?.includes('supabase.co')}
                           />
                         ) : (
                           <div className="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">

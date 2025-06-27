@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { writeFile } from 'fs/promises';
-import { join } from 'path';
-import { existsSync, mkdirSync } from 'fs';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: Request) {
   try {
@@ -18,23 +17,38 @@ export async function POST(request: Request) {
     let imageUrl: string | null = null;
     
     if (imageFile && imageFile.name) {
-      
-      const uploadsDir = join(process.cwd(), 'public', 'uploads');
-      if (!existsSync(uploadsDir)) {
-        mkdirSync(uploadsDir, { recursive: true });
-      }
-      
+      // Initialize S3 client
+      const s3Client = new S3Client({
+        region: 'auto',
+        endpoint: `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3`,
+        credentials: {
+          accessKeyId: process.env.ACCESS_KEY_ID!,
+          secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+        },
+        forcePathStyle: true,
+      });
+
       // Create a unique filename
-      const uniqueFilename = `${Date.now()}-${imageFile.name}`;
-      const imagePath = join(uploadsDir, uniqueFilename);
+      const fileExtension = imageFile.name.split('.').pop();
+      const uniqueFilename = `${uuidv4()}.${fileExtension}`;
+      const key = `projects-images/${uniqueFilename}`;
       
-      // Save the file
+      // Convert file to buffer
       const bytes = await imageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
-      await writeFile(imagePath, buffer);
       
-      // Store the relative URL for the database
-      imageUrl = `/uploads/${uniqueFilename}`;
+      // Upload to S3
+      const command = new PutObjectCommand({
+        Bucket: 'uploads',
+        Key: key,
+        Body: buffer,
+        ContentType: imageFile.type,
+      });
+      
+      await s3Client.send(command);
+      
+      // Generate public URL - Correct format for Supabase Storage
+      imageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
     }
     
     const productData = {
@@ -76,7 +90,24 @@ export async function GET() {
         rang: 'asc'
       }
     });
-    return NextResponse.json(products);
+
+    // Ensure all image URLs are properly formatted for Supabase
+    const formattedProducts = products.map(product => {
+      // If we have an image URL that's not a full URL, construct the full public URL
+      let finalImageUrl = product.imageUrl;
+      
+      if (product.imageUrl && !product.imageUrl.startsWith('http')) {
+        // If it's just a filename, prepend the full path
+        finalImageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${product.imageUrl}`;
+      }
+      
+      return {
+        ...product,
+        imageUrl: finalImageUrl
+      };
+    });
+
+    return NextResponse.json(formattedProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
     return NextResponse.json(
