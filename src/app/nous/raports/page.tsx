@@ -18,11 +18,11 @@ export default function RaportsPage() {
         } else if (res.status === 404) {
           setContent('لا يوجد محتوى متاح لهذه الصفحة بعد.');
         } else {
-          setError('Failed to fetch content.');
+          setError('فشل جلب المحتوى.');
         }
       } catch (err) {
-        console.error('Error fetching content:', err);
-        setError('Error fetching content.');
+        console.error('خطأ في جلب المحتوى:', err);
+        setError('خطأ في جلب المحتوى.');
       } finally {
         setLoading(false);
       }
@@ -45,7 +45,11 @@ export default function RaportsPage() {
       <div className="container mx-auto p-4 flex-grow">
         <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">التقارير</h1>
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-          <div className="text-gray-700 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: content }} />
+          {content ? (
+            <embed src={content} type="application/pdf" width="100%" height="600px" />
+          ) : (
+            <p className="text-gray-700">لا يوجد ملف PDF متاح لهذه الصفحة بعد.</p>
+          )}
         </div>
       </div>
       <Footer />

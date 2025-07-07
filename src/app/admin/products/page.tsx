@@ -227,9 +227,6 @@ export default function ProductsPage() {
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                       <div className="flex flex-wrap gap-2 text-xs">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{product.category}</span>
-                        {product.isNew && (
-                          <span className="bg-green-100 text-green-800 px-2 py-1 rounded">مشروع يحدث الان</span>
-                        )}
                       </div>
                       
                       {/* Mobile Actions */}
@@ -294,9 +291,6 @@ export default function ProductsPage() {
                     <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-32">
                       الفئة
                     </th>
-                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-32">
-                      مشروع يحدث الان
-                    </th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-48">
                       الإجراءات
                     </th>
@@ -330,15 +324,7 @@ export default function ProductsPage() {
                       <td className="px-4 py-3">
                         <div className="text-gray-700 text-sm">{product.category}</div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="text-sm">
-                          {product.isNew ? (
-                            <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">نعم</span>
-                          ) : (
-                            <span className="text-gray-500">لا</span>
-                          )}
-                        </div>
-                      </td>
+                     
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <button

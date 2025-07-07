@@ -2,14 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const RichTextEditor = dynamic(() => import('../../../components/RichTextEditor'), { ssr: false });
 
 export default function AdminRaportsPage() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,13 +18,13 @@ export default function AdminRaportsPage() {
           const data = await res.json();
           setContent(data.content);
         } else if (res.status === 404) {
-          setMessage('No content found for this page yet.');
+          setMessage('لم يتم العثور على محتوى لهذه الصفحة بعد.');
         } else {
-          setMessage('Failed to fetch content.');
+          setMessage('فشل جلب المحتوى.');
         }
       } catch (error) {
-        console.error('Error fetching content:', error);
-        setMessage('Error fetching content.');
+        console.error('خطأ في جلب المحتوى:', error);
+        setMessage('خطأ في جلب المحتوى.');
       } finally {
         setLoading(false);
       }
@@ -35,36 +33,51 @@ export default function AdminRaportsPage() {
     fetchContent();
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPdfFile(e.target.files[0]);
+    } else {
+      setPdfFile(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setLoading(true);
 
+    if (!pdfFile) {
+      setMessage('الرجاء تحديد ملف PDF لتحميله.');
+      setLoading(false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('pageName', 'raports');
+    formData.append('pdfFile', pdfFile);
+
     try {
       const res = await fetch('/api/page-content', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pageName: 'raports', content }),
+        body: formData,
       });
 
       if (res.ok) {
-        setMessage('Content saved successfully!');
+        setMessage('تم حفظ المحتوى بنجاح!');
         router.refresh();
       } else {
-        setMessage('Failed to save content.');
+        setMessage('فشل حفظ المحتوى.');
       }
     } catch (error) {
-      console.error('Error saving content:', error);
-      setMessage('Error saving content.');
+      console.error('خطأ في حفظ المحتوى:', error);
+      setMessage('خطأ في حفظ المحتوى.');
     } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen text-lg">Loading...</div>;
+    return <div className="flex justify-center items-center h-screen text-lg">جاري التحميل...</div>;
   }
 
   return (
@@ -72,11 +85,19 @@ export default function AdminRaportsPage() {
       <h1 className="text-3xl font-bold mb-6 text-center">إدارة صفحة التقارير</h1>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-8">
         <div className="mb-4">
-          <label htmlFor="content" className="block text-gray-700 text-sm font-bold mb-2">محتوى الصفحة:</label>
-          <RichTextEditor
-            value={content}
-            onChange={setContent}
+          <label htmlFor="pdfFile" className="block text-gray-700 text-sm font-bold mb-2">تحميل ملف PDF:</label>
+          <input
+            type="file"
+            id="pdfFile"
+            accept="application/pdf"
+            onChange={handleFileChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
+          {content && (
+            <p className="text-sm text-gray-500 mt-2">
+              الملف الحالي: <a href={content} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{content.split('/').pop()}</a>
+            </p>
+          )}
         </div>
         <div className="flex items-center justify-between">
           <button

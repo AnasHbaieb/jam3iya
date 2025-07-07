@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function AdminAboutPage() {
+export default function AdminAhdafPage() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -13,7 +13,7 @@ export default function AdminAboutPage() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch('/api/page-content?pageName=about');
+        const res = await fetch('/api/page-content?pageName=ahdaf');
         if (res.ok) {
           const data = await res.json();
           setContent(data.content);
@@ -53,7 +53,7 @@ export default function AdminAboutPage() {
     }
 
     const formData = new FormData();
-    formData.append('pageName', 'about');
+    formData.append('pageName', 'ahdaf');
     formData.append('pdfFile', pdfFile);
 
     try {
@@ -82,7 +82,7 @@ export default function AdminAboutPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center">إدارة صفحة تعريف الجمعية</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">إدارة صفحة أهداف الجمعية</h1>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-8">
         <div className="mb-4">
           <label htmlFor="pdfFile" className="block text-gray-700 text-sm font-bold mb-2">تحميل ملف PDF:</label>
@@ -99,7 +99,7 @@ export default function AdminAboutPage() {
             </p>
           )}
         </div>
-        <div className="flex items-center justify-between mt-16">
+        <div className="flex items-center justify-between">
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

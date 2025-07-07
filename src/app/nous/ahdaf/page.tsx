@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
-export default function AboutPage() {
+export default function AhdafPage() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -11,7 +11,7 @@ export default function AboutPage() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch('/api/page-content?pageName=about');
+        const res = await fetch('/api/page-content?pageName=ahdaf');
         if (res.ok) {
           const data = await res.json();
           setContent(data.content);
@@ -43,7 +43,7 @@ export default function AboutPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <div className="container mx-auto p-4 flex-grow">
-        <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">تعريف الجمعية</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">أهداف الجمعية</h1>
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
           {content ? (
             <embed src={content} type="application/pdf" width="100%" height="600px" />
