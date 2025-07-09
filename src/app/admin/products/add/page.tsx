@@ -19,7 +19,7 @@ export default function AddProductPage() {
   const [error, setError] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target as HTMLInputElement;
+    const { name, value } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
