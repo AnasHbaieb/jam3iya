@@ -14,7 +14,6 @@ export default function EditProductPage() {
     name: '',
     description: '',
     category: '',
-    isNew: false,
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -36,7 +35,6 @@ export default function EditProductPage() {
           name: productData.name,
           description: productData.description,
           category: productData.category,
-          isNew: productData.isNew,
         });
 
         if (productData.imageUrl) {
@@ -58,7 +56,7 @@ export default function EditProductPage() {
     const { name, value, type } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      [name]: value
     }));
   };
 
@@ -82,7 +80,6 @@ export default function EditProductPage() {
       form.append('name', formData.name);
       form.append('description', formData.description);
       form.append('category', formData.category);
-      form.append('isNew', String(formData.isNew));
 
       if (imageFile) {
         form.append('image', imageFile);
@@ -209,20 +206,6 @@ export default function EditProductPage() {
                 />
               </div>
             )}
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isNew"
-              name="isNew"
-              checked={formData.isNew}
-              onChange={handleChange}
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label htmlFor="isNew" className="mr-2 block text-sm text-green-700">
-              مشروع يحدث الان
-            </label>
           </div>
 
           <div className="flex justify-end">

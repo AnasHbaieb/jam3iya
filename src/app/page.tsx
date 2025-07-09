@@ -3,8 +3,6 @@
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Link from "next/link";
-import ProductCard from "./components/ProductCard";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 /*import QuickDonate from "./components/QuickDonate";
@@ -39,9 +37,6 @@ const images = [
 // Page d'accueil de notre application
 export default function Home() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,19 +52,15 @@ export default function Home() {
         }
         const data = await response.json();
         // الحصول على 3 من أحدث المنتجات التي تم وضع علامة عليها كجديدة
-        const featured = data
+        data
           .filter((product: Product) => product.isNew)
           .sort((a: Product, b: Product) => 
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           )
           .slice(0, 3);
-
-        setFeaturedProducts(featured);
       } catch (err: unknown) {
         console.error('Error:', err);
-        setError(err instanceof Error ? err.message : 'حدث خطأ غير متوقع'); // عرض الرسالة التفصيلية
       } finally {
-        setLoading(false);
       }
     };
 

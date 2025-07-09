@@ -39,9 +39,9 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(newApplication, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('خطأ في معالجة طلب التطوع:', error);
-    return NextResponse.json({ error: 'خطأ داخلي في الخادم', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'خطأ داخلي في الخادم', details: (error instanceof Error) ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
 
@@ -49,8 +49,8 @@ export async function GET() {
   try {
     const applications = await prisma.volunteerApplication.findMany();
     return NextResponse.json(applications, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('خطأ في جلب طلبات التطوع:', error);
-    return NextResponse.json({ error: 'خطأ داخلي في الخادم', details: error.message }, { status: 500 });
+    return NextResponse.json({ error: 'خطأ داخلي في الخادم', details: (error instanceof Error) ? error.message : 'Unknown error' }, { status: 500 });
   }
 } 

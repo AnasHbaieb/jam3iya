@@ -32,8 +32,8 @@ const AdminVolunteerApplicationsPage = () => {
           const errorData = await res.json();
           setError(`فشل جلب البيانات: ${errorData.error || 'خطأ غير معروف'}`);
         }
-      } catch (err: any) {
-        setError(`خطأ في الاتصال: ${err.message || 'الرجاء المحاولة لاحقاً.'}`);
+      } catch (err: unknown) {
+        setError(`خطأ في الاتصال: ${(err instanceof Error) ? err.message : 'الرجاء المحاولة لاحقاً.'}`);
       } finally {
         setLoading(false);
       }

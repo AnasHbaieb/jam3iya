@@ -19,7 +19,6 @@ model Product {
   description String?
   imageUrl    String?
   category    String
-  isNew       Boolean  @default(false)
   rang        Int      @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt 
@@ -54,4 +53,18 @@ model PageContent {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model VolunteerApplication {
+  id               Int      @id @default(autoincrement())
+  fullName         String
+  ageCategory      String
+  gender           String
+  phone            String
+  email            String   @unique
+  educationLevel   String
+  previousExperience String?
+  organizationName String?
+  interestAreas    String[]
+  createdAt        DateTime @default(now())
 }

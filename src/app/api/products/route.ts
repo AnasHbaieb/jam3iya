@@ -12,7 +12,6 @@ export async function POST(request: Request) {
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
     const category = formData.get('category') as string;
-    const isNew = formData.get('isNew') as string;
     const imageFile = formData.get('image') as File;
     let imageUrl: string | null = null;
     
@@ -55,7 +54,6 @@ export async function POST(request: Request) {
       name,
       description,
       category,
-      isNew: isNew === 'true',
       imageUrl: imageUrl || null
     };
     

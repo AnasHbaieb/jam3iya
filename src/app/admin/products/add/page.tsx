@@ -11,7 +11,6 @@ export default function AddProductPage() {
     name: '',
     description: '',
     category: '',
-    isNew: false,
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -23,7 +22,7 @@ export default function AddProductPage() {
     const { name, value, type } = e.target as HTMLInputElement;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: value,
     }));
   };
 
@@ -52,7 +51,6 @@ export default function AddProductPage() {
       submitFormData.append('name', formData.name);
       submitFormData.append('description', formData.description);
       submitFormData.append('category', formData.category);
-      submitFormData.append('isNew', formData.isNew.toString());
 
       // Add image file if available
       if (imageFile) {
@@ -174,20 +172,6 @@ export default function AddProductPage() {
               </div>
             )}
             
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isNew"
-              name="isNew"
-              checked={formData.isNew}
-              onChange={handleChange}
-              className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label htmlFor="isNew" className="mr-2 block text-sm text-green-700">
-              مشروع يحدث الان
-            </label>
           </div>
 
           <div className="flex justify-end">

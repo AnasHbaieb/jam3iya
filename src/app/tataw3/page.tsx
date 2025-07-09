@@ -56,8 +56,8 @@ const VolunteerFormPage = () => {
         const errorData = await res.json();
         setMessage(`فشل الإرسال: ${errorData.error || 'خطأ غير معروف'}`);
       }
-    } catch (error: any) {
-      setMessage(`خطأ في الاتصال: ${error.message || 'الرجاء المحاولة لاحقاً.'}`);
+    } catch (error: unknown) {
+      setMessage(`خطأ في الاتصال: ${(error instanceof Error) ? error.message : 'الرجاء المحاولة لاحقاً.'}`);
     }
   };
 
