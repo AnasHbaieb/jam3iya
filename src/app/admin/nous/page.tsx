@@ -15,6 +15,14 @@ export default function AdminDashboard() {
               <div className="mt-4 text-green-600 font-medium">تعريف الجمعية →</div>
             </div>
           </Link>
+
+          <Link href="/admin/nous/haykal" className="block">
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-green-200">
+              <h2 className="text-xl font-semibold mb-2 text-green-800">اهداف الجمعية</h2>
+              <p className="text-amber-600">تعرض هذه الصفحة الأهداف الرئيسية للجمعية ورؤيتها المستقبلية.</p>
+              <div className="mt-4 text-green-600 font-medium">إدارة اهداف الجمعية →</div>
+            </div>
+          </Link>
           
           <Link href="/admin/nous/haykal" className="block">
             <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-green-200">
