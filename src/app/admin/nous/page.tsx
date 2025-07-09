@@ -16,7 +16,7 @@ export default function AdminDashboard() {
             </div>
           </Link>
 
-          <Link href="/admin/nous/haykal" className="block">
+          <Link href="/admin/nous/ahdaf" className="block">
             <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-green-200">
               <h2 className="text-xl font-semibold mb-2 text-green-800">اهداف الجمعية</h2>
               <p className="text-amber-600">تعرض هذه الصفحة الأهداف الرئيسية للجمعية ورؤيتها المستقبلية.</p>
