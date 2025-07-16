@@ -10,11 +10,14 @@ export default function AddProductPage() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    shortDescription: '',
     category: '',
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [secondaryImageFile, setSecondaryImageFile] = useState<File | null>(null);
+  const [secondaryImagePreview, setSecondaryImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -27,15 +30,17 @@ export default function AddProductPage() {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.name === 'image' && e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setImageFile(file);
-
-      // Create and display image preview
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
-
-      // Clean up the preview URL when component unmounts
+      return () => URL.revokeObjectURL(previewUrl);
+    } else if (e.target.name === 'secondaryImage' && e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setSecondaryImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setSecondaryImagePreview(previewUrl);
       return () => URL.revokeObjectURL(previewUrl);
     }
   };
@@ -46,20 +51,21 @@ export default function AddProductPage() {
     setError('');
 
     try {
-      // Create FormData object for the API request
       const submitFormData = new FormData();
       submitFormData.append('name', formData.name);
       submitFormData.append('description', formData.description);
+      submitFormData.append('shortDescription', formData.shortDescription);
       submitFormData.append('category', formData.category);
 
-      // Add image file if available
       if (imageFile) {
         submitFormData.append('image', imageFile);
+      }
+      if (secondaryImageFile) {
+        submitFormData.append('secondaryImage', secondaryImageFile);
       }
 
       const response = await fetch('/api/products', {
         method: 'POST',
-        // No Content-Type header - browser will set it with proper boundary for FormData
         body: submitFormData,
       });
 
@@ -129,6 +135,20 @@ export default function AddProductPage() {
             ></textarea>
           </div>
 
+          <div className="mb-6">
+            <label htmlFor="shortDescription" className="block text-sm font-medium text-amber-700 mb-1">
+              وصف مختصر للمشروع
+            </label>
+            <textarea
+              id="shortDescription"
+              name="shortDescription"
+              value={formData.shortDescription}
+              onChange={handleChange}
+              rows={2}
+              className="w-full px-4 py-2 border border-green-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            ></textarea>
+          </div>
+
           <div>
             <label htmlFor="category" className="block text-sm font-medium text-amber-700">
               الفئة
@@ -150,7 +170,7 @@ export default function AddProductPage() {
 
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-amber-700">
-              الصورة
+              الصورة الرئيسية
             </label>
             <input
               type="file"
@@ -164,14 +184,38 @@ export default function AddProductPage() {
               <div className="mt-2">
                 <Image
                   src={imagePreview}
-                  alt="معاينة"
+                  alt="معاينة الصورة الرئيسية"
                   width={200}
                   height={200}
                   className="rounded-lg object-cover"
                 />
               </div>
             )}
-            
+          </div>
+
+          <div>
+            <label htmlFor="secondaryImage" className="block text-sm font-medium text-amber-700">
+              الصورة الثانوية
+            </label>
+            <input
+              type="file"
+              id="secondaryImage"
+              name="secondaryImage"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mt-1 block w-full"
+            />
+            {secondaryImagePreview && (
+              <div className="mt-2">
+                <Image
+                  src={secondaryImagePreview}
+                  alt="معاينة الصورة الثانوية"
+                  width={200}
+                  height={200}
+                  className="rounded-lg object-cover"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end">

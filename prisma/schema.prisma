@@ -18,6 +18,8 @@ model Product {
   name        String
   description String?
   imageUrl    String?
+  shortDescription String?
+  secondaryImageUrl String?
   category    String
   rang        Int      @unique
   createdAt   DateTime @default(now())

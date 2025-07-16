@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
+import { Product } from '@prisma/client'; // Import Product type
 
 export async function POST(request: Request) {
   try {
@@ -11,9 +12,12 @@ export async function POST(request: Request) {
     // Extract product details from form data
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
+    const shortDescription = formData.get('shortDescription') as string | null;
     const category = formData.get('category') as string;
     const imageFile = formData.get('image') as File;
+    const secondaryImageFile = formData.get('secondaryImage') as File;
     let imageUrl: string | null = null;
+    let secondaryImageUrl: string | null = null;
     
     if (imageFile && imageFile.name) {
       // Initialize S3 client
@@ -49,12 +53,44 @@ export async function POST(request: Request) {
       // Generate public URL - Correct format for Supabase Storage
       imageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
     }
+
+    if (secondaryImageFile && secondaryImageFile.name) {
+      const s3Client = new S3Client({
+        region: 'auto',
+        endpoint: `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3`,
+        credentials: {
+          accessKeyId: process.env.ACCESS_KEY_ID!,
+          secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+        },
+        forcePathStyle: true,
+      });
+
+      const fileExtension = secondaryImageFile.name.split('.').pop();
+      const uniqueFilename = `${uuidv4()}-secondary.${fileExtension}`;
+      const key = `projects-images/${uniqueFilename}`;
+      
+      const bytes = await secondaryImageFile.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      
+      const command = new PutObjectCommand({
+        Bucket: 'uploads',
+        Key: key,
+        Body: buffer,
+        ContentType: secondaryImageFile.type,
+      });
+      
+      await s3Client.send(command);
+      
+      secondaryImageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
+    }
     
     const productData = {
       name,
       description,
+      shortDescription,
       category,
-      imageUrl: imageUrl || null
+      imageUrl: imageUrl || null,
+      secondaryImageUrl: secondaryImageUrl || null
     };
     
     // Find the highest existing rang value
@@ -83,7 +119,7 @@ export async function POST(request: Request) {
 }
 export async function GET() {
   try {
-    const products = await prisma.product.findMany({
+    const products: Product[] = await prisma.product.findMany({
       orderBy: {
         rang: 'asc'
       }
@@ -101,7 +137,8 @@ export async function GET() {
       
       return {
         ...product,
-        imageUrl: finalImageUrl
+        imageUrl: finalImageUrl,
+        secondaryImageUrl: product.secondaryImageUrl
       };
     });
 

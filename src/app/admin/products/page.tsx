@@ -11,7 +11,9 @@ export interface Product {
   id: number;
   name: string;
   description: string;
+  shortDescription: string | null;
   imageUrl: string | null;
+  secondaryImageUrl: string | null;
   category: string;
   isNew: boolean;
   createdAt: Date;
