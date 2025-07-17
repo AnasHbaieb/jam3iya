@@ -3,9 +3,6 @@ import { prisma } from '@/lib/prisma';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import { Product } from '@prisma/client'; // Import Product type
-import { writeFile, unlink } from "fs/promises";
-import { existsSync, mkdirSync } from "fs";
-import { join } from "path";
 
 export async function GET(
     request: Request,
