@@ -77,8 +77,8 @@ export default function Home() {
         </div>
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full flex flex-col items-center relative h-96 md:h-screen">
-            <Image src={images[currentImageIndex]} alt="صورة متغيرة" layout="fill" objectFit="cover" /> 
+          <div className="w-full flex flex-col items-center relative h-72 md:h-96">
+            <Image src={images[currentImageIndex]} alt="صورة متغيرة" layout="fill" objectFit="contain" /> 
           </div>
         </section>
         {/*<section>

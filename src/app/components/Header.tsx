@@ -31,7 +31,7 @@ export default function Header() {
 
     return (
         <header className="bg-white shadow-sm sticky top-0 z-50 w-full">
-            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
                         <Link href="/" className="flex items-center">

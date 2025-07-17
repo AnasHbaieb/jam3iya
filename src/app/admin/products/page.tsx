@@ -227,10 +227,30 @@ export default function ProductsPage() {
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-medium text-green-700 mb-1">{product.name}</h3>
                       <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                      {product.shortDescription && (
+                        <p className="text-sm text-gray-500 mb-2">
+                          <span className="font-semibold">وصف مختصر:</span> {product.shortDescription}
+                        </p>
+                      )}
                       <div className="flex flex-wrap gap-2 text-xs">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">{product.category}</span>
                       </div>
                       
+                      {product.secondaryImageUrl && (
+                        <div className="flex-shrink-0 mt-2">
+                            <div className="h-16 w-16 relative">
+                                <Image
+                                    src={product.secondaryImageUrl}
+                                    alt={`صورة مصغرة لـ ${product.name}`}
+                                    fill
+                                    className="object-cover rounded-lg"
+                                    unoptimized={product.secondaryImageUrl?.includes('supabase.co')}
+                                />
+                            </div>
+                            <p className="text-xs text-gray-500 text-center mt-1">صورة مصغرة</p>
+                        </div>
+                      )}
+
                       {/* Mobile Actions */}
                       <div className="flex items-center gap-2 mt-3">
                         <button
@@ -284,11 +304,17 @@ export default function ProductsPage() {
                     <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-20">
                       الصورة
                     </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-20">
+                      صورة مصغرة
+                    </th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider">
                       الاسم
                     </th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider">
                       الوصف
+                    </th>
+                    <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider">
+                      وصف مختصر
                     </th>
                     <th className="px-4 py-3 text-right text-sm font-semibold text-green-800 tracking-wider w-32">
                       الفئة
@@ -318,10 +344,29 @@ export default function ProductsPage() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
+                        <div className="h-16 w-16 relative">
+                          {product.secondaryImageUrl ? (
+                            <Image
+                              src={product.secondaryImageUrl}
+                              alt={`صورة مصغرة لـ ${product.name}`}
+                              fill
+                              className="object-cover rounded-lg"
+                            />
+                          ) : (
+                            <div className="h-16 w-16 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">
+                              لا توجد صورة مصغرة
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
                         <div className="font-medium text-green-700 text-sm">{product.name}</div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-gray-700 text-sm max-w-xs truncate">{product.description}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="text-gray-700 text-sm max-w-xs truncate">{product.shortDescription || 'لا يوجد وصف مختصر'}</div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-gray-700 text-sm">{product.category}</div>

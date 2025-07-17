@@ -16,7 +16,7 @@ export default function AboutPage() {
           const data = await res.json();
           setContent(data.content);
         } else if (res.status === 404) {
-          setContent('لا يوجد محتوى متاح لهذه الصفحة بعد.');
+          // Keep content empty
         } else {
           setError('فشل جلب المحتوى.');
         }
@@ -48,7 +48,7 @@ export default function AboutPage() {
           {content ? (
             <embed src={content} type="application/pdf" width="100%" height="600px" />
           ) : (
-            <p className="text-gray-700">لا يوجد ملف PDF متاح لهذه الصفحة بعد.</p>
+            null
           )}
         </div>
       </div>
