@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 /*import QuickDonate from "./components/QuickDonate";
 */
 interface Product {
@@ -166,7 +167,7 @@ export default function Home() {
   <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* بطاقة الانخراط */}
-      <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition">
+      <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60">
         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
           {/* أيقونة انخراط (أشخاص/مجموعة) */}
           <svg className="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -179,7 +180,8 @@ export default function Home() {
         </p>
       </div>
       {/* بطاقة التطوع */}
-<div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition">
+      <Link href="/tataw3" className="block">
+<div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60">
   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
     {/* أيقونة تطوع جديدة  */}
     <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -191,7 +193,7 @@ export default function Home() {
     شارك بوقتك وخبرتك وساعد في تحسين حياة الأطفال والأسر عبر برامجنا التطوعية المتنوعة.
   </p>
 </div>
-
+</Link>
     </div>
   </div>
          </section>

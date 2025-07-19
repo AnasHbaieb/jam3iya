@@ -67,7 +67,7 @@ export default function Footer({ pageType = 'other' }: FooterProps) {
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
-                alkalimah.attaybah@gmail.com
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=alkalimah.attaybah@gmail.com" className="hover:underline" target="_blank" rel="noopener noreferrer">alkalimah.attaybah@gmail.com</a>
             </li>
             <li className='flex items-center'>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-amber-200" viewBox="0 0 20 20" fill="currentColor">
@@ -80,6 +80,12 @@ export default function Footer({ pageType = 'other' }: FooterProps) {
                 <path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/>
               </svg>
               29214150 216+
+            </li>
+            <li className='flex items-center'>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-amber-200" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/>
+              </svg>
+              52778107 216+
             </li>
           </ul>
         </div>
@@ -109,16 +115,29 @@ export default function Footer({ pageType = 'other' }: FooterProps) {
             </a>
             <a href="https://www.linkedin.com/in/alkalimah-attaybah-155016372/" target="_blank" rel="noopener noreferrer" className="text-gray-100 hover:text-amber-200 transition-colors duration-300 transform hover:scale-110">
               <svg className="h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z" style={{fill: '#0A66C2'}}/>
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z" style={{fill: '#4695D6'}}/>
               </svg>
             </a>
           </div>
+          {/* Google Map inside Follow Us section */}
+          <div className="mt-4">
+            <h4 className="text-md font-bold mb-2 text-amber-200">موقعنا</h4>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.27083049071!2d10.7770373!3d34.7914267!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1301d300744e12bb%3A0x782158b01e4dbcec!2z2KzYsdmG2Yog2KfZhNiy2YjYp9iz2K0g2KfZhNi02YjYt9mB2YbYqg!5e0!3m2!1sar!2stn!4v1719946462719!5m2!1sar!2stn"
+              width="250"
+              height="150"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade">
+            </iframe>
+          </div>
         </div>
-        </div>
-        <div className="border-t border-green-700 mt-8 pt-8 text-center text-sm text-amber-200 font-bold">
+      </div>
+      <div className="border-t border-green-700 mt-8 pt-8 text-center text-sm text-amber-200 font-bold">
           <p>2025 © جمعية الكلمة الطيبة all rights reserved by</p>
         </div>
-        </div>
+      </div>
     </footer>
   );
 }
