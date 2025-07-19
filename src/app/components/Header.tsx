@@ -68,10 +68,8 @@ export default function Header() {
                             <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                                 <div className="py-1">
                                     <Link href="/nous/about" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">تعريف الجمعية</Link>
-                                    <Link href="/nous/ahdaf" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">أهداف الجمعية</Link>
                                     <Link href="/Contact" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">اتصل بنا</Link>
                                     <Link href="/nous/haykal" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الهيكل الاداري</Link>
-                                    <Link href="/nous/engagement" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">  الانخراط</Link>
                                     <Link href="/nous/raports" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">التقارير السنوية </Link>
                                 </div>
                             </div>
@@ -129,10 +127,8 @@ export default function Header() {
                             {aboutMenuOpen && (
                                 <div className="flex flex-col gap-1 pl-4">
                                     <Link href="/nous/about" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">تعريف الجمعية</Link>
-                                    <Link href="/nous/ahdaf" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">أهداف الجمعية</Link>
                                     <Link href="/Contact" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">اتصل بنا</Link>
                                     <Link href="/nous/haykal" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الهيكل الإداري</Link>
-                                    <Link href="/nous/engagement" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">الانخراط</Link>
                                     <Link href="/nous/raports" className="block px-4 py-2 text-sm text-gray-700 hover:text-amber-500 hover:bg-gray-100">التقارير السنوية</Link>
                                 </div>
                             )}

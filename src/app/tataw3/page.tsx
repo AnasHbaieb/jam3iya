@@ -52,8 +52,8 @@ const VolunteerFormPage = () => {
       });
 
       if (res.ok) {
-        setMessage('تم إرسال طلبك بنجاح!');
-        router.push('/'); // Redirect or show success message
+        alert('تم إرسال طلبك بنجاح! شكراً لك على اهتمامك بالتطوع معنا.');
+        router.push('/'); // Redirect immediately after alert
       } else {
         const errorData = await res.json();
         setMessage(`فشل الإرسال: ${errorData.error || 'خطأ غير معروف'}`);
@@ -70,10 +70,10 @@ const VolunteerFormPage = () => {
         <h1 className="text-3xl font-bold text-green-700 text-center mb-6">استمارة تطوع</h1>
 
         <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
-          <h2 className="text-xl font-semibold text-orange-600 mb-4">المعلومات الشخصية</h2>
+          <h2 className="text-xl font-semibold text-amber-600 mb-4">المعلومات الشخصية</h2>
           
           <div className="mb-4">
-            <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">الاسم واللقب:</label>
+            <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">الاسم واللقب:<span className="text-red-500">*</span></label>
             <input
               type="text"
               id="fullName"
@@ -85,7 +85,7 @@ const VolunteerFormPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="ageCategory" className="block text-gray-700 text-sm font-bold mb-2">الفئة العمرية:</label>
+            <label htmlFor="ageCategory" className="block text-gray-700 text-sm font-bold mb-2">الفئة العمرية:<span className="text-red-500">*</span></label>
             <select
               id="ageCategory"
               value={ageCategory}
@@ -101,7 +101,7 @@ const VolunteerFormPage = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">الجنس:</label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">الجنس:<span className="text-red-500">*</span></label>
             <div className="mt-2">
               <label className="inline-flex items-center mr-6">
                 <input
@@ -131,7 +131,7 @@ const VolunteerFormPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">الهاتف:</label>
+            <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">الهاتف:<span className="text-red-500">*</span></label>
             <input
               type="tel"
               id="phone"
@@ -143,7 +143,7 @@ const VolunteerFormPage = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">البريد الالكتروني:</label>
+            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">البريد الالكتروني:<span className="text-red-500">*</span></label>
             <input
               type="email"
               id="email"
@@ -155,7 +155,7 @@ const VolunteerFormPage = () => {
           </div>
 
           <div className="mb-6">
-            <label htmlFor="educationLevel" className="block text-gray-700 text-sm font-bold mb-2">المستوى الدراسي:</label>
+            <label htmlFor="educationLevel" className="block text-gray-700 text-sm font-bold mb-2">المستوى الدراسي:<span className="text-red-500">*</span></label>
             <select
               id="educationLevel"
               value={educationLevel}
@@ -171,7 +171,7 @@ const VolunteerFormPage = () => {
             </select>
           </div>
 
-          <h2 className="text-xl font-semibold text-orange-600 mb-4">الخبرات التطوعية والاهتمامات</h2>
+          <h2 className="text-xl font-semibold text-amber-600 mb-4">الخبرات التطوعية والاهتمامات</h2>
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">هل لديك خبرة سابقة في العمل التطوعي؟ (نعم/لا)</label>

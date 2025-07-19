@@ -180,20 +180,32 @@ export default function ProductsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-amber-600">إدارة المشاريع</h1>
-          <Link
-            href="/admin/products/add"
-            className="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition duration-300 text-center"
-          >
-            إضافة مشروع جديد
+          <div className="flex flex-col sm:flex-row items-center gap-4"> {/* New div to group title and add button */}
+            <h1 className="text-2xl sm:text-3xl font-bold text-amber-600">إدارة المشاريع</h1>
+            <Link
+              href="/admin/products/add"
+              className="bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 px-4 sm:py-3 sm:px-6 rounded-lg transition duration-300 text-center"
+            >
+              إضافة مشروع جديد
+            </Link>
+          </div>
+          <Link href="/" className="text-green-600 hover:text-green-800">
+            {/* أيقونة العين */}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
           </Link>
         </div>
         
+        {/* تم إزالة زر الرجوع واستبداله بأيقونة العين في أعلى اليمين */}
+        {/*
         <div className="mb-6">
           <Link href="/admin" className="text-green-700 hover:underline text-sm sm:text-base">
             ← ارجع للإدارة
           </Link>
         </div>
+        */}
 
         {products.length === 0 ? (
           <div className="bg-green-50 border border-green-400 text-green-800 p-6 rounded-lg text-center">
