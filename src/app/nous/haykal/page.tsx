@@ -3,8 +3,14 @@ import { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
+interface Document {
+  id: number;
+  title: string;
+  url: string;
+}
+
 export default function HaykalPage() {
-  const [content, setContent] = useState('');
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -14,9 +20,9 @@ export default function HaykalPage() {
         const res = await fetch('/api/page-content?pageName=haykal');
         if (res.ok) {
           const data = await res.json();
-          setContent(data.content);
+          setDocuments(data.documents || []);
         } else if (res.status === 404) {
-          // Keep content empty
+          setDocuments([]); // في حالة 404، لا توجد مستندات
         } else {
           setError('فشل جلب المحتوى.');
         }
@@ -45,10 +51,17 @@ export default function HaykalPage() {
       <div className="container mx-auto p-4 flex-grow">
         <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">الهيكل الإداري</h1>
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-          {content ? (
-            <embed src={content} type="application/pdf" width="100%" height="600px" />
+          {documents.length === 0 ? (
+            <p className="text-center text-gray-600">لا توجد مستندات متاحة حاليًا.</p>
           ) : (
-            null
+            <div className="space-y-8">
+              {documents.map((doc) => (
+                <div key={doc.id} className="border-b pb-4 last:border-b-0">
+                  <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">{doc.title}</h2>
+                  <embed src={doc.url} type="application/pdf" width="100%" height="600px" />
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

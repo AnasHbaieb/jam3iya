@@ -1,24 +1,60 @@
+'use client'
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { ContactMessage } from '@/actions/contactActions';
+import { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
+import { CellObject } from 'xlsx';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 // إزالة تعريف إجراء الخادم المحلي
 
-export default async function ContactRequests() {
-  let messages: ContactMessage[] = [];
-  try {
-    // جلب الرسائل من قاعدة البيانات
-    messages = await prisma.contactMessage.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching contact messages during prerendering:", error);
-    // يمكنك هنا التعامل مع الخطأ بشكل أكثر تفصيلاً إذا لزم الأمر
+export default function ContactRequests() {
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch('/api/page-content?page=contact'); // تأكد من أن هذا المسار صحيح لجلب رسائل الاتصال
+        if (res.ok) {
+          const data = await res.json();
+          // قد تحتاج إلى تعديل هذا إذا كانت بنية البيانات مختلفة
+          setMessages(data.messages || data);
+        } else {
+          const errorData = await res.json();
+          setError(`فشل جلب البيانات: ${errorData.error || 'خطأ غير معروف'}`);
+        }
+      } catch (err: unknown) {
+        setError(`خطأ في الاتصال: ${(err instanceof Error) ? err.message : 'الرجاء المحاولة لاحقاً.'}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(messages.map(msg => ({
+      name: msg.name,
+      email: msg.email,
+      message: msg.message,
+    })));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'طلبات الاتصال');
+    XLSX.writeFile(wb, 'طلبات_الاتصال.xlsx');
+  };
+
+  if (loading) {
+    return <div className="text-center mt-8">جاري التحميل...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-8 text-red-600">خطأ: {error}</div>;
   }
 
   return (
@@ -35,6 +71,15 @@ export default async function ContactRequests() {
           </Link>
         </div>
         
+        <div className="mb-6">
+          <button
+            onClick={exportToExcel}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            تصدير إلى Excel
+          </button>
+        </div>
+
         <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 text-right table-fixed">
             <thead>

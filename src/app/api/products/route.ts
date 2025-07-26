@@ -34,7 +34,8 @@ export async function POST(request: Request) {
       // Create a unique filename
       const fileExtension = imageFile.name.split('.').pop();
       const uniqueFilename = `${uuidv4()}.${fileExtension}`;
-      const key = `projects-images/${uniqueFilename}`;
+      {/*const key = `projects-images/${uniqueFilename}`;*/}
+      const key = uniqueFilename;
       
       // Convert file to buffer
       const bytes = await imageFile.arrayBuffer();
@@ -67,7 +68,8 @@ export async function POST(request: Request) {
 
       const fileExtension = secondaryImageFile.name.split('.').pop();
       const uniqueFilename = `${uuidv4()}-secondary.${fileExtension}`;
-      const key = `projects-images/${uniqueFilename}`;
+      {/*const key = `projects-images/${uniqueFilename}`;*/}
+      const key = uniqueFilename;
       
       const bytes = await secondaryImageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -127,14 +129,14 @@ export async function GET() {
 
     // Ensure all image URLs are properly formatted for Supabase
     const formattedProducts = products.map(product => {
-      // If we have an image URL that's not a full URL, construct the full public URL
+      {/*// If we have an image URL that's not a full URL, construct the full public URL
       let finalImageUrl = product.imageUrl;
       
       if (product.imageUrl && !product.imageUrl.startsWith('http')) {
         // If it's just a filename, prepend the full path
         finalImageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${product.imageUrl}`;
-      }
-      
+      }*/}
+      const finalImageUrl = product.imageUrl;
       return {
         ...product,
         imageUrl: finalImageUrl,

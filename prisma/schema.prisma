@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -52,9 +53,20 @@ model User {
 model PageContent {
   id        Int      @id @default(autoincrement())
   pageName  String   @unique
-  content   String
+  content   String? // حقل جديد للمحتوى النصي المنسق
+  documents PageDocument[] // علاقة واحد إلى متعدد مع مستندات PDF
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PageDocument {
+  id          Int      @id @default(autoincrement())
+  title       String
+  url         String
+  pageContentId Int // مفتاح خارجي لربط المستند بـ PageContent
+  pageContent PageContent @relation(fields: [pageContentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model VolunteerApplication {

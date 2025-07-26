@@ -11,7 +11,7 @@ export default function AboutPage() {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch('/api/page-content?pageName=about');
+        const res = await fetch('/api/richtext-content?pageName=about');
         if (res.ok) {
           const data = await res.json();
           setContent(data.content);
@@ -46,9 +46,9 @@ export default function AboutPage() {
         <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">تعريف الجمعية</h1>
         <div className="bg-white shadow-md rounded-lg p-6 mb-8">
           {content ? (
-            <embed src={content} type="application/pdf" width="100%" height="600px" />
+            <div dangerouslySetInnerHTML={{ __html: content }} />
           ) : (
-            null
+            <p className="text-center text-gray-500">لم يتم إضافة محتوى لهذه الصفحة بعد.</p>
           )}
         </div>
       </div>

@@ -1,43 +1,51 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+interface Document {
+  id: number;
+  title: string;
+  url: string;
+}
+
 export default function AdminHaykalPage() {
-  const [content, setContent] = useState('');
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const router = useRouter();
+  const [pdfTitle, setPdfTitle] = useState('');
+
+  const fetchContent = useCallback(async () => {
+    try {
+      const res = await fetch('/api/page-content?pageName=haykal');
+      if (res.ok) {
+        const data = await res.json();
+        setDocuments(data.documents || []);
+      } else if (res.status === 404) {
+        setMessage('لم يتم العثور على محتوى لهذه الصفحة بعد.');
+      } else {
+        setMessage('فشل جلب المحتوى.');
+      }
+    } catch (error) {
+      console.error('خطأ في جلب المحتوى:', error);
+      setMessage('خطأ في جلب المحتوى.');
+    } finally {
+      setLoading(false);
+    }
+  }, []); // لا توجد تبعيات لأنها لا تعتمد على أي حالة متغيرة أو props
 
   useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const res = await fetch('/api/page-content?pageName=haykal');
-        if (res.ok) {
-          const data = await res.json();
-          setContent(data.content);
-        } else if (res.status === 404) {
-          setMessage('لم يتم العثور على محتوى لهذه الصفحة بعد.');
-        } else {
-          setMessage('فشل جلب المحتوى.');
-        }
-      } catch (error) {
-        console.error('خطأ في جلب المحتوى:', error);
-        setMessage('خطأ في جلب المحتوى.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchContent();
-  }, []);
+  }, [fetchContent]); // إضافة fetchContent إلى مصفوفة التبعيات
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPdfFile(e.target.files[0]);
+      setPdfTitle(e.target.files[0].name.split('.')[0] || '');
     } else {
       setPdfFile(null);
+      setPdfTitle('');
     }
   };
 
@@ -46,8 +54,8 @@ export default function AdminHaykalPage() {
     setMessage('');
     setLoading(true);
 
-    if (!pdfFile) {
-      setMessage('الرجاء تحديد ملف PDF لتحميله.');
+    if (!pdfFile || !pdfTitle) {
+      setMessage('الرجاء تحديد ملف PDF وإدخال عنوان له.');
       setLoading(false);
       return;
     }
@@ -55,6 +63,7 @@ export default function AdminHaykalPage() {
     const formData = new FormData();
     formData.append('pageName', 'haykal');
     formData.append('pdfFile', pdfFile);
+    formData.append('title', pdfTitle);
 
     try {
       const res = await fetch('/api/page-content', {
@@ -63,16 +72,41 @@ export default function AdminHaykalPage() {
       });
 
       if (res.ok) {
-        setMessage('تم حفظ المحتوى بنجاح!');
-        router.refresh();
+        setMessage('تم حفظ المستند بنجاح!');
+        setPdfFile(null); // مسح الملف بعد التحميل الناجح
+        setPdfTitle('');
+        fetchContent(); // إعادة جلب المستندات بعد الحفظ الناجح
       } else {
-        setMessage('فشل حفظ المحتوى.');
+        setMessage('فشل حفظ المستند.');
       }
     } catch (error) {
-      console.error('خطأ في حفظ المحتوى:', error);
-      setMessage('خطأ في حفظ المحتوى.');
+      console.error('خطأ في حفظ المستند:', error);
+      setMessage('خطأ في حفظ المستند.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (documentId: number) => {
+    if (window.confirm('هل أنت متأكد أنك تريد حذف هذا المستند؟')) {
+      setMessage('');
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/page-content?documentId=${documentId}`,
+          { method: 'DELETE' });
+
+        if (res.ok) {
+          setMessage('تم حذف المستند بنجاح!');
+          fetchContent(); // إعادة جلب المستندات بعد الحذف الناجح
+        } else {
+          setMessage('فشل حذف المستند.');
+        }
+      } catch (error) {
+        console.error('خطأ في حذف المستند:', error);
+        setMessage('خطأ في حذف المستند.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -93,7 +127,17 @@ export default function AdminHaykalPage() {
         </Link>
       </div>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h2 className="text-2xl font-semibold mb-4">إضافة مستند PDF جديد</h2>
         <div className="mb-4">
+          <label htmlFor="pdfTitle" className="block text-gray-700 text-sm font-bold mb-2">عنوان ملف PDF:</label>
+          <input
+            type="text"
+            id="pdfTitle"
+            value={pdfTitle}
+            onChange={(e) => setPdfTitle(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-4"
+            placeholder="أدخل عنوان ملف PDF"
+          />
           <label htmlFor="pdfFile" className="block text-gray-700 text-sm font-bold mb-2">تحميل ملف PDF:</label>
           <input
             type="file"
@@ -102,11 +146,6 @@ export default function AdminHaykalPage() {
             onChange={handleFileChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
-          {content && (
-            <p className="text-sm text-gray-500 mt-2">
-              الملف الحالي: <a href={content} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{content.split('/').pop()}</a>
-            </p>
-          )}
         </div>
         <div className="flex items-center justify-between">
           <button
@@ -114,17 +153,37 @@ export default function AdminHaykalPage() {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={loading}
           >
-            {loading ? 'جارٍ الحفظ...' : 'حفظ المحتوى'}
+            {loading ? 'جارٍ الحفظ...' : 'حفظ المستند'}
           </button>
-          {/* زر الرجوع تم استبداله بأيقونة العين في أعلى اليمين */}
-          {/*
           <Link href="/admin/nous" className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             الرجوع
           </Link>
-          */}
         </div>
         {message && <p className="mt-4 text-center text-sm font-semibold text-gray-600">{message}</p>}
       </form>
+
+      <div className="bg-white shadow-md rounded-lg p-6">
+        <h2 className="text-2xl font-semibold mb-4">المستندات الحالية</h2>
+        {documents.length === 0 ? (
+          <p>لا توجد مستندات محملة حاليًا.</p>
+        ) : (
+          <ul className="space-y-4">
+            {documents.map((doc) => (
+              <li key={doc.id} className="flex justify-between items-center bg-gray-100 p-3 rounded-md shadow-sm">
+                <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  {doc.title}
+                </a>
+                <button
+                  onClick={() => handleDelete(doc.id)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded focus:outline-none focus:shadow-outline"
+                >
+                  حذف
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

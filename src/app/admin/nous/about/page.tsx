@@ -2,18 +2,20 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import 'quill/dist/quill.snow.css'; // keep quill styles
+
+const QuillEditor = dynamic(() => import('@/app/components/QuillEditor'), { ssr: false });
 
 export default function AdminAboutPage() {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
-  const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch('/api/page-content?pageName=about');
+        const res = await fetch('/api/richtext-content?pageName=about');
         if (res.ok) {
           const data = await res.json();
           setContent(data.content);
@@ -33,38 +35,23 @@ export default function AdminAboutPage() {
     fetchContent();
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setPdfFile(e.target.files[0]);
-    } else {
-      setPdfFile(null);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setLoading(true);
 
-    if (!pdfFile) {
-      setMessage('الرجاء تحديد ملف PDF لتحميله.');
-      setLoading(false);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('pageName', 'about');
-    formData.append('pdfFile', pdfFile);
-
     try {
-      const res = await fetch('/api/page-content', {
+      const res = await fetch('/api/richtext-content', {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pageName: 'about', content }),
       });
 
       if (res.ok) {
         setMessage('تم حفظ المحتوى بنجاح!');
-        router.refresh();
+        // No need to router.refresh() for text content
       } else {
         setMessage('فشل حفظ المحتوى.');
       }
@@ -94,19 +81,12 @@ export default function AdminAboutPage() {
       </div>
       <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-8">
         <div className="mb-4">
-          <label htmlFor="pdfFile" className="block text-gray-700 text-sm font-bold mb-2">تحميل ملف PDF:</label>
-          <input
-            type="file"
-            id="pdfFile"
-            accept="application/pdf"
-            onChange={handleFileChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          <label htmlFor="content" className="block text-gray-700 text-sm font-bold mb-2">محتوى الصفحة:</label>
+          <QuillEditor
+            value={content}
+            onChange={setContent}
+            placeholder="ادخل محتوى صفحة تعريف الجمعية هنا..."
           />
-          {content && (
-            <p className="text-sm text-gray-500 mt-2">
-              الملف الحالي: <a href={content} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{content.split('/').pop()}</a>
-            </p>
-          )}
         </div>
         <div className="flex items-center justify-between mt-16">
           <button
