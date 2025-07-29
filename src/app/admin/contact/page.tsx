@@ -18,7 +18,7 @@ export default function ContactRequests() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await fetch('/api/page-content?page=contact'); // تأكد من أن هذا المسار صحيح لجلب رسائل الاتصال
+        const res = await fetch('/api/contact-messages');
         if (res.ok) {
           const data = await res.json();
           // قد تحتاج إلى تعديل هذا إذا كانت بنية البيانات مختلفة
