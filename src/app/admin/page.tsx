@@ -72,6 +72,20 @@ export default function AdminDashboard() {
               <div className="mt-4 text-green-600 font-medium">إدارة من نحن →</div>
             </div>
           </Link>
+          <Link href="/admin/tataw3" className="block">
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-green-200">
+              <h2 className="text-xl font-semibold mb-2 text-green-800">إدارة التطوع</h2>
+              <p className="text-amber-600">إدارة طلبات التطوع والمشاركين.</p>
+              <div className="mt-4 text-green-600 font-medium">إدارة التطوع →</div>
+            </div>
+          </Link>
+          <Link href="/admin/new" className="block">
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-green-200">
+              <h2 className="text-xl font-semibold mb-2 text-green-800">إدارة المستجدات</h2>
+              <p className="text-amber-600">إضافة، تعديل، أو حذف المستجدات والأخبار.</p>
+              <div className="mt-4 text-green-600 font-medium">إدارة المستجدات →</div>
+            </div>
+          </Link>
         </div>
 
        

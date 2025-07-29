@@ -1,15 +1,13 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+"use client";
+
 import PublicContactForm from "./PublicContactForm";
 import { createMessage } from "@/actions/contactActions";
 
 export default function Contact() {
   
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-grow bg-gradient-to-b from-green-900 to-gold-900">
+    <div className="min-h-screen flex flex-col" dir="rtl">
+      <main className="flex-grow flex items-center justify-center">
         <div className="max-w-6xl mx-auto w-full p-8">
           {/* Contact Info Cards */}
           <div className="flex justify-center mb-8">
@@ -55,8 +53,6 @@ export default function Contact() {
           </div>
         </div>
       </main>
-
-      <Footer pageType="other" />
     </div>
   );
 }

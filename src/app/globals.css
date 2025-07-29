@@ -1,12 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
   --foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -21,8 +19,15 @@
   }
 }
 
+html,
 body {
-  background: var(--background);
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  /* Remove background gradient from body */
+  /* background: linear-gradient(to bottom, #14532d, #ffffff); */
   color: var(--foreground);
   font-family: var(--font-arabic), Arial, Helvetica, sans-serif;
   text-align: right;

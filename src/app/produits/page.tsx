@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 
 type Category = 'مشاريع ظرفية' | 'مشاريع موسمية' | 'مشاريع شهرية'  | 'جميع';
@@ -65,10 +63,8 @@ export default function ProductsPage() {
   const categories: Category[] = ['جميع', 'مشاريع شهرية', 'مشاريع موسمية', 'مشاريع ظرفية'];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-grow bg-gray-50 py-8">
+    <div className="min-h-screen flex flex-col" dir="rtl">
+      <main className="flex-grow py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* En-tête de la page avec titre et description */}
           <div className="mb-8">
@@ -175,7 +171,7 @@ export default function ProductsPage() {
         </div>
       </main>
 
-      <Footer pageType="other" />
+      {/* No Footer component found in original file, so no change needed here */}
     </div>
   );
 }

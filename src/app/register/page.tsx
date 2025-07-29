@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { createAccount } from "@/actions/contactActions";
 
-export default function Register() {
+export default function RegisterPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -38,8 +39,8 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="max-w-md w-full space-y-8 p-8 rounded-lg shadow-md">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-green-700">
                         إنشاء حساب جديد

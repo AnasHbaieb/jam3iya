@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Image from 'next/image';
 
 interface Document {
   id: number;
@@ -46,26 +45,26 @@ export default function HaykalPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <div className="container mx-auto p-4 flex-grow">
-        <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">الهيكل الإداري</h1>
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-          {documents.length === 0 ? (
-            <p className="text-center text-gray-600">لا توجد مستندات متاحة حاليًا.</p>
-          ) : (
-            <div className="space-y-8">
-              {documents.map((doc) => (
-                <div key={doc.id} className="border-b pb-4 last:border-b-0">
-                  <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">{doc.title}</h2>
-                  <embed src={doc.url} type="application/pdf" width="100%" height="600px" />
-                </div>
-              ))}
-            </div>
-          )}
+    <div className="min-h-screen flex flex-col" dir="rtl">
+      <main className="flex-grow py-12">
+        <div className="container mx-auto p-4 flex-grow">
+          <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">الهيكل الإداري</h1>
+          <div className="shadow-md rounded-lg p-6 mb-8 bg-gray-100">
+            {documents.length === 0 ? (
+              <p className="text-center text-gray-600">لا توجد مستندات متاحة حاليًا.</p>
+            ) : (
+              <div className="space-y-8">
+                {documents.map((doc) => (
+                  <div key={doc.id} className="border-b pb-4 last:border-b-0">
+                    <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">{doc.title}</h2>
+                    <embed src={doc.url} type="application/pdf" width="100%" height="600px" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-      <Footer />
+      </main>
     </div>
   );
 }

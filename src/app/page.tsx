@@ -1,8 +1,6 @@
 //page.tsx
 "use client";
 
-import Header from "./components/Header";
-import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +20,17 @@ interface Product {
   rang: number;
 }
 
-
+interface ContentPost {
+  id: number;
+  title: string;
+  category: string;
+  description: string | null;
+  date: string; 
+  imageUrl: string | null;
+  videoUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // قائمة الصور
 const images = [
@@ -41,6 +49,7 @@ const images = [
 export default function Home() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
+  const [contentPosts, setContentPosts] = useState<ContentPost[]>([]); // New state for content posts
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,18 +69,37 @@ export default function Home() {
         setProducts(sortedProducts);
       } catch (err: unknown) {
         console.error('Error:', err);
-      } finally {
+      }
+    };
+
+    const fetchContentPosts = async () => {
+      try {
+        const response = await fetch('/api/content-posts');
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'فشل في جلب المستجدات');
+        }
+        const data: ContentPost[] = await response.json();
+        setContentPosts(data);
+      } catch (err: unknown) {
+        console.error('Error fetching content posts:', err);
       }
     };
 
     fetchProducts();
+    fetchContentPosts(); // Fetch content posts
 
     return () => clearInterval(interval);
   }, []);
 
+  // Function to format date (assuming 'date' is a string like 'YYYY-MM-DD')
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('ar-EG', options);
+  };
+
   return (
     <div className="min-h-screen flex flex-col" dir="rtl">
-      <Header />
       <main className="flex-grow">
         <div className="relative z-50">
           {/*   <QuickDonate /> */}
@@ -79,17 +107,10 @@ export default function Home() {
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full flex flex-col items-center relative h-72 md:h-96">
-            <Image src={images[currentImageIndex]} alt="صورة متغيرة" layout="fill" objectFit="contain" /> 
+            <Image src={images[currentImageIndex]} alt="صورة متغيرة" fill style={{ objectFit: 'contain' }} priority={true} /> 
           </div>
         </section>
-        {/*<section>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-              مستجدات
-            </h2>
-            </div>
-        </section>*/}
-        <section className="py-12 bg-gray-50">
+        <section className="py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
               مشاريعنا
@@ -108,17 +129,19 @@ export default function Home() {
                   </svg>
                 </button>
                 
-                <div id="projects-container" className="flex overflow-x-auto scroll-smooth gap-6 py-4 px-8 hide-scrollbar">
+                <div id="projects-container" className="flex overflow-x-auto scroll-smooth gap-6 py-4 px-8 hide-scrollbar ">
                   {products.map((product) => (
                     <div key={product.id} className="flex-none w-72">
-                      <div className="bg-white p-6 rounded-lg shadow-md">
+                      <div className="p-6 rounded-lg shadow-md bg-gray-100">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 relative overflow-hidden">
                           {product.secondaryImageUrl ? (
                             <Image
                               src={product.secondaryImageUrl}
                               alt={product.name}
                               fill
-                              className="object-cover rounded-full"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              style={{ objectFit: 'cover' }}
+                              className="rounded-full"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
@@ -161,13 +184,66 @@ export default function Home() {
           `}</style>
         </section>
         
-        
+        {/* قسم المستجدات */}
+        {contentPosts.length > 0 && (
+          <section className="py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
+                مستجداتنا
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {contentPosts.map((post) => (
+                  <div key={post.id} className="rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row transform transition duration-300 hover:scale-105">
+                    <div className="relative h-48 w-full md:w-1/2">
+                      {post.imageUrl ? (
+                        <Image
+                          src={post.imageUrl}
+                          alt={post.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          style={{ objectFit: 'cover' }}
+                          className="rounded-t-lg md:rounded-l-lg md:rounded-t-none"
+                          priority={true}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs rounded-t-lg md:rounded-l-lg md:rounded-t-none">
+                          لا توجد صورة
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6 flex flex-col justify-between w-full md:w-1/2">
+                      <div>
+                        <span className="text-sm font-medium text-amber-600 mb-1 block">{post.category}</span>
+                        <p className="text-sm text-red-500 mb-2">{
+                          (() => {
+                            const date = new Date(post.date);
+                            const year = new Intl.DateTimeFormat('en-US', { year: 'numeric', calendar: 'gregory' }).format(date);
+                            const month = new Intl.DateTimeFormat('en-US', { month: '2-digit', calendar: 'gregory' }).format(date);
+                            const day = new Intl.DateTimeFormat('en-US', { day: '2-digit', calendar: 'gregory' }).format(date);
+                            return `${year}/${month}/${day}`;
+                          })()
+                        }</p>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h3>
+                      </div>
+                      <Link href={`/news/${post.id}`}>
+                        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-4">
+                          التفاصيل →
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* قسم الانخراط والتطوع */}
-        <section className="py-12 bg-white">
+        <section className="py-12">
   <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* بطاقة الانخراط */}
-      <div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60">
+      <div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60 bg-gray-100">
         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
           {/* أيقونة انخراط (أشخاص/مجموعة) */}
           <svg className="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -181,7 +257,7 @@ export default function Home() {
       </div>
       {/* بطاقة التطوع */}
       <Link href="/tataw3" className="block">
-<div className="bg-gray-50 p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60">
+<div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60 bg-gray-100">
   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
     {/* أيقونة تطوع جديدة  */}
     <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -199,7 +275,6 @@ export default function Home() {
          </section>
 
       </main>
-      <Footer />
     </div>
   );
 }

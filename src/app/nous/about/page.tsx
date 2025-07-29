@@ -1,7 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Image from 'next/image';
 
 export default function AboutPage() {
   const [content, setContent] = useState('');
@@ -40,19 +39,19 @@ export default function AboutPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <div className="container mx-auto p-4 flex-grow">
-        <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">تعريف الجمعية</h1>
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-          {content ? (
-            <div dangerouslySetInnerHTML={{ __html: content }} />
-          ) : (
-            <p className="text-center text-gray-500">لم يتم إضافة محتوى لهذه الصفحة بعد.</p>
-          )}
+    <div className="min-h-screen flex flex-col" dir="rtl">
+      <main className="flex-grow py-12">
+        <div className="container mx-auto p-4 flex-grow ">
+          <h1 className="text-3xl font-bold mb-6 text-center text-amber-500">تعريف الجمعية</h1>
+          <div className="shadow-md rounded-lg p-6 mb-8 bg-gray-100">
+            {content ? (
+              <div dangerouslySetInnerHTML={{ __html: content }} />
+            ) : (
+              <p className="text-center text-gray-500">لم يتم إضافة محتوى لهذه الصفحة بعد.</p>
+            )}
+          </div>
         </div>
-      </div>
-      <Footer />
+      </main>
     </div>
   );
 }

@@ -1,7 +1,5 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import { products } from "../data/products";
 import { useSearchParams, useRouter } from "next/navigation";
 
@@ -59,10 +57,9 @@ function DonatePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-900 via-amber-300 to-white" dir="rtl">
-      <Header />
-      <main className="flex-grow py-12">
-        <div className="max-w-xl mx-auto bg-white/90 rounded-3xl shadow-lg p-8 border-2 border-amber-400">
+    <div className="min-h-screen flex flex-col" dir="rtl">
+      <main className="flex-grow flex items-center justify-center">
+        <div className="max-w-xl mx-auto rounded-3xl shadow-lg p-8 border-2 border-amber-400">
           <h1 className="text-3xl font-extrabold text-green-800 text-center mb-2">
             صفحة التبرع
           </h1>
@@ -113,7 +110,6 @@ function DonatePage() {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

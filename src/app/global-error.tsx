@@ -16,9 +16,9 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html>
+    <html lang="ar" dir="rtl">
       <body>
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 text-gray-800">
+        <div className="flex flex-col items-center justify-center min-h-screen text-gray-800">
           <h1 className="text-6xl font-bold text-red-600 mb-4">خطأ</h1>
           <h2 className="text-3xl font-semibold mb-2">حدث خطأ غير متوقع</h2>
           <p className="text-lg text-center mb-8">
