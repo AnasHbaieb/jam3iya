@@ -20,7 +20,6 @@ const NewPostPage = () => {
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -55,7 +54,7 @@ const NewPostPage = () => {
     setImageFile(file);
     setImagePreview(previewUrl);
     setError(''); // Clear previous errors
-  }, []);
+  }, [MAX_FILE_SIZE]);
 
   const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -80,7 +79,7 @@ const NewPostPage = () => {
     setVideoFile(file);
     setVideoPreview(previewUrl);
     setError(''); // Clear previous errors
-  }, []);
+  }, [MAX_FILE_SIZE]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -119,7 +118,7 @@ const NewPostPage = () => {
       setImagePreview(previewUrl);
       setError('');
     }
-  }, []);
+  }, [MAX_FILE_SIZE]);
 
   const handleVideoDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -146,12 +145,11 @@ const NewPostPage = () => {
       setVideoPreview(previewUrl);
       setError('');
     }
-  }, []);
+  }, [MAX_FILE_SIZE]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccess(false);
     setIsSubmitting(true);
 
     if (!formData.title.trim()) {
@@ -215,8 +213,8 @@ const NewPostPage = () => {
       setVideoFile(null);
       setVideoPreview(null);
       router.push('/admin/new'); // Redirect to the news management page
-    } catch (err: any) {
-      setError(err.message || 'حدث خطأ غير متوقع.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsSubmitting(false);
     }

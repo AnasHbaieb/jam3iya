@@ -1,10 +1,7 @@
 'use client'
-import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
 import { ContactMessage } from '@/actions/contactActions';
 import { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
-import { CellObject } from 'xlsx';
 
 export const dynamic = 'force-dynamic';
 

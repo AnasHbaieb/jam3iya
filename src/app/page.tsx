@@ -81,12 +81,6 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Function to format date (assuming 'date' is a string like 'YYYY-MM-DD')
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('ar-EG', options);
-  };
-
   return (
     <div className="min-h-screen flex flex-col" dir="rtl">
       <main className="flex-grow">

@@ -24,7 +24,6 @@ export default function EditContentPostPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false); // إضافة حالة النجاح
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -198,7 +197,6 @@ export default function EditContentPostPage() {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
-    setSuccess(false); // إعادة تعيين حالة النجاح
 
     if (!formData.title.trim()) {
       setError('العنوان مطلوب.');

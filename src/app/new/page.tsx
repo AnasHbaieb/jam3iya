@@ -17,8 +17,8 @@ const NewPage = () => {
         }
         const data: ContentPost[] = await response.json();
         setPosts(data);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'An unknown error occurred');
       } finally {
         setLoading(false);
       }

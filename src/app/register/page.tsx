@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createAccount } from "@/actions/contactActions";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState('');
