@@ -30,10 +30,12 @@ model Product {
 model ContentPost {
   id                Int      @id @default(autoincrement())
   title             String   @unique
+  category          String? 
   description       String?
-  shortDescription  String?
+  excerpt           String? // إضافة حقل excerpt
+  date              String?  
   imageUrl          String?
-  secondaryImageUrl String?
+  videoUrl          String? 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   rang              Int      @default(0)

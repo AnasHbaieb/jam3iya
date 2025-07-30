@@ -2,24 +2,27 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
+import Image from 'next/image'; // Assuming you use Next.js Image component
+import { FaUpload, FaTimes } from 'react-icons/fa'; // For upload icon and remove button
 
-export default function AddContentPostPage() {
+const NewPostPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     title: '',
+    category: '',
     description: '',
-    shortDescription: '',
+    date: '',
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [secondaryImageFile, setSecondaryImageFile] = useState<File | null>(null);
-  const [secondaryImagePreview, setSecondaryImagePreview] = useState<string | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -33,347 +36,375 @@ export default function AddContentPostPage() {
     if (!e.target.files || e.target.files.length === 0) return;
 
     const file = e.target.files[0];
-    const previewUrl = URL.createObjectURL(file);
 
-    if (e.target.name === 'image') {
-      setImageFile(file);
-      setImagePreview(previewUrl);
-    } else if (e.target.name === 'secondaryImage') {
-      setSecondaryImageFile(file);
-      setSecondaryImagePreview(previewUrl);
+    if (file.size > MAX_FILE_SIZE) {
+      setError('حجم الصورة يتجاوز الحد المسموح به (5MB).');
+      setImageFile(null);
+      setImagePreview(null);
+      return;
     }
 
-    // Cleanup function will be called when component unmounts or when the preview changes
-    return () => URL.revokeObjectURL(previewUrl);
+    if (!file.type.startsWith('image/')) {
+      setError('الرجاء تحميل ملف صورة صالح (PNG, JPG, GIF).');
+      setImageFile(null);
+      setImagePreview(null);
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setImageFile(file);
+    setImagePreview(previewUrl);
+    setError(''); // Clear previous errors
   }, []);
 
-  const validateForm = () => {
-    if (!formData.title.trim()) {
-      setError('عنوان المستجد مطلوب');
-      return false;
+  const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+
+    const file = e.target.files[0];
+
+    if (file.size > MAX_FILE_SIZE) {
+      setError('حجم الفيديو يتجاوز الحد المسموح به (5MB).');
+      setVideoFile(null);
+      setVideoPreview(null);
+      return;
     }
-    if (!imageFile) {
-      setError('الصورة الرئيسية مطلوبة');
-      return false;
+
+    if (!file.type.startsWith('video/')) {
+      setError('الرجاء تحميل ملف فيديو صالح.');
+      setVideoFile(null);
+      setVideoPreview(null);
+      return;
     }
-    return true;
-  };
+
+    const previewUrl = URL.createObjectURL(file);
+    setVideoFile(file);
+    setVideoPreview(previewUrl);
+    setError(''); // Clear previous errors
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+  }, []);
+
+  const handleImageDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.size > MAX_FILE_SIZE) {
+        setError('حجم الصورة يتجاوز الحد المسموح به (5MB).');
+        setImageFile(null);
+        setImagePreview(null);
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        setError('الرجاء تحميل ملف صورة صالح (PNG, JPG, GIF).');
+        setImageFile(null);
+        setImagePreview(null);
+        return;
+      }
+      const previewUrl = URL.createObjectURL(file);
+      setImageFile(file);
+      setImagePreview(previewUrl);
+      setError('');
+    }
+  }, []);
+
+  const handleVideoDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.size > MAX_FILE_SIZE) {
+        setError('حجم الفيديو يتجاوز الحد المسموح به (5MB).');
+        setVideoFile(null);
+        setVideoPreview(null);
+        return;
+      }
+      if (!file.type.startsWith('video/')) {
+        setError('الرجاء تحميل ملف فيديو صالح.');
+        setVideoFile(null);
+        setVideoPreview(null);
+        return;
+      }
+      const previewUrl = URL.createObjectURL(file);
+      setVideoFile(file);
+      setVideoPreview(previewUrl);
+      setError('');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess(false);
-
-    if (!validateForm()) return;
-
     setIsSubmitting(true);
 
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('shortDescription', formData.shortDescription);
+    if (!formData.title.trim()) {
+      setError('العنوان مطلوب.');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.category.trim()) {
+      setError('الصنف مطلوب.');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.description.trim()) {
+      setError('الوصف مطلوب.');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.date.trim()) {
+      setError('التاريخ مطلوب.');
+      setIsSubmitting(false);
+      return;
+    }
+    if (!imageFile) {
+      setError('الصورة مطلوبة.');
+      setIsSubmitting(false);
+      return;
+    }
 
-      if (imageFile) formDataToSend.append('image', imageFile);
-      if (secondaryImageFile) formDataToSend.append('secondaryImage', secondaryImageFile);
+    try {
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('category', formData.category);
+      data.append('description', formData.description);
+      data.append('date', formData.date);
+      if (imageFile) {
+        data.append('image', imageFile);
+      }
+      if (videoFile) {
+        data.append('video', videoFile);
+      }
 
       const response = await fetch('/api/content-posts', {
         method: 'POST',
-        body: formDataToSend,
+        body: data,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'فشل في إضافة المستجد');
+        throw new Error(errorData.error || 'فشل في إضافة المستجد.');
       }
 
-      setSuccess(true);
-      setTimeout(() => {
-        router.push('/admin/new');
-        router.refresh();
-      }, 1500);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'حدث خطأ غير متوقع أثناء إضافة المستجد');
+      alert('تمت إضافة المستجد بنجاح!');
+      setFormData({
+        title: '',
+        category: '',
+        description: '',
+        date: '',
+      });
+      setImageFile(null);
+      setImagePreview(null);
+      setVideoFile(null);
+      setVideoPreview(null);
+      router.push('/admin/new'); // Redirect to the news management page
+    } catch (err: any) {
+      setError(err.message || 'حدث خطأ غير متوقع.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="flex justify-between items-start mb-6">
-          <h1 className="text-3xl font-bold text-amber-600 mb-2">إضافة مستجد جديد</h1>
-          {/* <Link href="/" className="text-green-600 hover:text-green-800 self-center">
-            
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </Link> */}
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4 text-right">تسجيل المستجدات</h1>
+      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md">
+        {/* Success message will now be an alert */}
+
+        <div className="mb-4">
+          <label htmlFor="title" className="block text-gray-700 text-lg font-bold mb-2 text-right">
+            العنوان
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right"
+            dir="rtl"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="category" className="block text-gray-700 text-lg font-bold mb-2 text-right">
+            الصنف
+          </label>
+          <input
+            type="text"
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right"
+            dir="rtl"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Status Messages */}
-          {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
+        {/* Image Upload Field */}
+        <div className="mb-4">
+          <label htmlFor="image-upload" className="block text-gray-700 text-lg font-bold mb-2 text-right">
+            الصورة
+          </label>
+          <div
+            className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleImageDrop}
+            onClick={() => document.getElementById('image-input')?.click()}
+          >
+            <div className="space-y-1 text-center">
+              {imagePreview ? (
+                <div className="relative w-48 h-48 mx-auto">
+                  <Image
+                    src={imagePreview}
+                    alt="معاينة الصورة"
+                    layout="fill"
+                    objectFit="contain"
+                    className="rounded-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setImageFile(null);
+                      setImagePreview(null);
+                      setError('');
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition"
+                  >
+                    <FaTimes className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {success && (
-            <div className="bg-green-50 border-l-4 border-green-500 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-green-700">تمت إضافة المستجد بنجاح!</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Basic Information Section */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 border-b pb-2">المعلومات الأساسية</h2>
-            
-            <div className="grid grid-cols-1 gap-6">
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                  عنوان المستجد <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="أدخل عنوان المستجد"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Thumbnail Section */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 border-b pb-2">المحتوى  المختصر</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="shortDescription" className="block text-sm font-medium text-gray-700 mb-1">
-                  وصف مختصر للمستجد
-                </label>
-                <textarea
-                  id="shortDescription"
-                  name="shortDescription"
-                  value={formData.shortDescription}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="وصف مختصر يظهر في صفحة المستجدات الرئيسية"
-                ></textarea>
-              </div>
-
-              <div>
-                <label htmlFor="secondaryImage" className="block text-sm font-medium text-gray-700 mb-1">
-                  الصورة المصغرة
-                </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    {secondaryImagePreview ? (
-                      <div className="relative">
-                        <Image
-                          src={secondaryImagePreview}
-                          alt="معاينة الصورة المصغرة"
-                          width={200}
-                          height={200}
-                          className="rounded-lg object-cover mx-auto"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSecondaryImageFile(null);
-                            setSecondaryImagePreview(null);
-                          }}
-                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <svg
-                          className="mx-auto h-12 w-12 text-gray-400"
-                          stroke="currentColor"
-                          fill="none"
-                          viewBox="0 0 48 48"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        <div className="flex text-sm text-gray-600">
-                          <label
-                            htmlFor="secondaryImage"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500"
-                          >
-                            <span className='p-20'>رفع صورة</span>
-                            <input
-                              id="secondaryImage"
-                              name="secondaryImage"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageChange}
-                              className="sr-only"
-                            />
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF بحد أقصى 5MB</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content Section */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 border-b pb-2">المحتوى الرئيسي</h2>
-            
-            <div className="space-y-6">
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                  وصف المستجد
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows={5}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  placeholder="وصف مفصل عن المستجد"
-                ></textarea>
-              </div>
-
-              <div>
-                <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-1">
-                  الصورة الرئيسية <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    {imagePreview ? (
-                      <div className="relative">
-                        <Image
-                          src={imagePreview}
-                          alt="معاينة الصورة الرئيسية"
-                          width={300}
-                          height={200}
-                          className="rounded-lg object-cover mx-auto"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setImageFile(null);
-                            setImagePreview(null);
-                          }}
-                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <svg
-                          className="mx-auto h-12 w-12 text-gray-400"
-                          stroke="currentColor"
-                          fill="none"
-                          viewBox="0 0 48 48"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        <div className="flex text-sm text-gray-600">
-                          <label
-                            htmlFor="image"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-amber-600 hover:text-amber-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-amber-500"
-                          >
-                            <span className='p-20'>رفع صورة</span>
-                            <input
-                              id="image"
-                              name="image"
-                              type="file"
-                              accept="image/*"
-                              onChange={handleImageChange}
-                              className="sr-only"
-                              required
-                            />
-                          </label>
-                        </div>
-                        <p className="text-xs text-gray-500">PNG, JPG, GIF بحد أقصى 5MB</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Submit Section */}
-          <div className="flex justify-end space-x-3 space-x-reverse">
-            <button
-              type="button"
-              onClick={() => router.push('/admin/new')}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
-            >
-              إلغاء
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? (
+              ) : (
                 <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  جاري الحفظ...
+                  <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600 text-center justify-center">
+                    <span className="font-medium text-amber-600">رفع صورة</span>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF بحد أقصى 5MB</p>
                 </>
-              ) : 'إضافة المستجد'}
-            </button>
+              )}
+              <input
+                id="image-input"
+                name="image"
+                type="file"
+                accept="image/png, image/jpeg, image/gif"
+                onChange={handleImageChange}
+                className="sr-only"
+              />
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="date" className="block text-gray-700 text-lg font-bold mb-2 text-right">
+            التاريخ
+          </label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right"
+            dir="rtl"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="description" className="block text-gray-700 text-lg font-bold mb-2 text-right">
+            الوصف
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            rows={6}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-right"
+            dir="rtl"
+          ></textarea>
+        </div>
+
+        {/* Video Upload Field */}
+        <div className="mb-4">
+          <label htmlFor="video-upload" className="block text-gray-700 text-lg font-bold mb-2 text-right">
+            فيديو إن وجد
+          </label>
+          <div
+            className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleVideoDrop}
+            onClick={() => document.getElementById('video-input')?.click()}
+          >
+            <div className="space-y-1 text-center">
+              {videoPreview ? (
+                <div className="relative w-full max-w-md mx-auto">
+                  <video src={videoPreview} controls className="rounded-md w-full" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setVideoFile(null);
+                      setVideoPreview(null);
+                      setError('');
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition"
+                  >
+                    <FaTimes className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600 text-center justify-center">
+                    <span className="font-medium text-amber-600">رفع فيديو</span>
+                  </div>
+                  <p className="text-xs text-gray-500">MP4, WebM, Ogg بحد أقصى 5MB</p>
+                </>
+              )}
+              <input
+                id="video-input"
+                name="video"
+                type="file"
+                accept="video/mp4,video/webm,video/ogg"
+                onChange={handleVideoChange}
+                className="sr-only"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between flex-row-reverse">
+          {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-right flex-grow" dir="rtl">{error}</div>}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+          >
+            {isSubmitting ? 'جاري الإضافة...' : 'إضافة'}
+          </button>
+        </div>
+      </form>
     </div>
   );
-}
+};
+
+export default NewPostPage;

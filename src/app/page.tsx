@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { NewsCard, ContentPost } from "./components/NewsCard";
 /*import QuickDonate from "./components/QuickDonate";
 */
 interface Product {
@@ -18,18 +19,6 @@ interface Product {
   createdAt: string;
   updatedAt: string;
   rang: number;
-}
-
-interface ContentPost {
-  id: number;
-  title: string;
-  category: string;
-  description: string | null;
-  date: string; 
-  imageUrl: string | null;
-  videoUrl: string | null;
-  createdAt: string;
-  updatedAt: string;
 }
 
 // قائمة الصور
@@ -186,58 +175,25 @@ export default function Home() {
         
         {/* قسم المستجدات */}
         {contentPosts.length > 0 && (
-          <section className="py-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
-                مستجداتنا
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {contentPosts.map((post) => (
-                  <div key={post.id} className="rounded-lg shadow-md overflow-hidden flex flex-col md:flex-row transform transition duration-300 hover:scale-105">
-                    <div className="relative h-48 w-full md:w-1/2">
-                      {post.imageUrl ? (
-                        <Image
-                          src={post.imageUrl}
-                          alt={post.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                          style={{ objectFit: 'cover' }}
-                          className="rounded-t-lg md:rounded-l-lg md:rounded-t-none"
-                          priority={true}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs rounded-t-lg md:rounded-l-lg md:rounded-t-none">
-                          لا توجد صورة
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6 flex flex-col justify-between w-full md:w-1/2">
-                      <div>
-                        <span className="text-sm font-medium text-amber-600 mb-1 block">{post.category}</span>
-                        <p className="text-sm text-red-500 mb-2">{
-                          (() => {
-                            const date = new Date(post.date);
-                            const year = new Intl.DateTimeFormat('en-US', { year: 'numeric', calendar: 'gregory' }).format(date);
-                            const month = new Intl.DateTimeFormat('en-US', { month: '2-digit', calendar: 'gregory' }).format(date);
-                            const day = new Intl.DateTimeFormat('en-US', { day: '2-digit', calendar: 'gregory' }).format(date);
-                            return `${year}/${month}/${day}`;
-                          })()
-                        }</p>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h3>
-                      </div>
-                      <Link href={`/news/${post.id}`}>
-                        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-4">
-                          التفاصيل →
-                        </button>
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
+  <section className="py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-12">
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          اخر المستجدات
+        </h2>
+        <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-amber-600 mx-auto rounded-full"></div>
+      </div>
+      
+      {contentPosts.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {contentPosts.map((post, index) => (
+            <NewsCard key={post.id} post={post} index={index} />
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+)}
         {/* قسم الانخراط والتطوع */}
         <section className="py-12">
   <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

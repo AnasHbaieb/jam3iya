@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 
 interface ContentPost {
   id: number;
@@ -17,11 +16,15 @@ interface ContentPost {
   updatedAt: string;
 }
 
-export default function ContentPostDetailPage({ params: { id } }: { params: { id: string } }) {
-  const router = useRouter();
+export default function ContentPostDetailPage() {
+  const pathname = usePathname(); // هنا نحصل على مسار الصفحة
   const [post, setPost] = useState<ContentPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
+  // استخراج الـ id من الـ URL
+  const idMatch = pathname?.match(/\/news\/(\d+)/);
+  const id = idMatch ? idMatch[1] : null;
 
   useEffect(() => {
     if (id) {
@@ -43,6 +46,7 @@ export default function ContentPostDetailPage({ params: { id } }: { params: { id
       fetchPost();
     }
   }, [id]);
+
 
   if (loading) {
     return (
@@ -80,42 +84,84 @@ export default function ContentPostDetailPage({ params: { id } }: { params: { id
   };
 
   return (
-    <div className="min-h-screen py-12" dir="rtl">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 shadow-lg rounded-lg p-8">
-        <div className="flex justify-between items-center mb-6">
-          <Link href="/" className="text-green-600 hover:text-green-800">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </Link>
-          <h1 className="text-3xl font-bold text-amber-600">تفاصيل المستجد</h1>
+    <div className="min-h-screen  py-8 sm:py-12" dir="rtl">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Header Card */}
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden mb-8">
+        <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-6 sm:px-8 py-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+            <div className="w-2 h-8 bg-white rounded-full opacity-80"></div>
+            تفاصيل المستجد
+          </h1>
         </div>
-
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h2>
-        <p className="text-gray-600 text-lg mb-2">
-          <span className="font-semibold">الصنف:</span> {post.category}
-        </p>
-        <p className="text-gray-600 text-lg mb-4">
-          <span className="font-semibold">التاريخ:</span> {formatDate(post.date)}
-        </p>
-
-        {post.imageUrl && (
-          <div className="mb-6 relative h-96 w-full rounded-lg overflow-hidden shadow-md">
-            <Image src={post.imageUrl} alt={post.title} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: 'cover' }} priority={true} />
+        
+        {/* Main Content */}
+        <div className="p-6 sm:p-8">
+          {/* Title Section */}
+          <div className="mb-8">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+              {post.title}
+            </h2>
+            
+            {/* Meta Information */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                <span className="font-semibold text-amber-700">الصنف:</span>
+                <span className="bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {post.category}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                <span className="font-semibold text-gray-700">التاريخ:</span>
+                <span className="text-gray-800 font-medium">{formatDate(post.date)}</span>
+              </div>
+            </div>
           </div>
-        )}
-
-        {post.videoUrl && (
-          <div className="mb-6 w-full max-w-2xl mx-auto rounded-lg overflow-hidden shadow-md">
-            <video src={post.videoUrl} controls className="w-full" />
+  
+          {/* Media Section */}
+          {post.imageUrl && (
+            <div className="mb-8">
+              <div className="relative h-64 sm:h-80 lg:h-96 w-full rounded-xl overflow-hidden shadow-lg ring-1 ring-black/5">
+                <Image 
+                  src={post.imageUrl} 
+                  alt={post.title} 
+                  fill 
+                  sizes="(max-width: 768px) 100vw, 50vw" 
+                  style={{ objectFit: 'cover' }} 
+                  priority={true}
+                  className="transition-transform duration-300 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+            </div>
+          )}
+  
+          {post.videoUrl && (
+            <div className="mb-8">
+              <div className="w-full max-w-3xl mx-auto rounded-xl overflow-hidden shadow-lg ring-1 ring-black/5">
+                <video 
+                  src={post.videoUrl} 
+                  controls 
+                  className="w-full bg-black"
+                  style={{ aspectRatio: '16/9' }}
+                />
+              </div>
+            </div>
+          )}
+  
+          {/* Content Section */}
+          <div className="bg-gray-50/50 rounded-xl p-6 sm:p-8 border border-gray-200/50">
+            <div className="prose prose-lg prose-gray max-w-none">
+              <div className="text-gray-800 leading-relaxed text-lg sm:text-xl font-light">
+                {post.description}
+              </div>
+            </div>
           </div>
-        )}
-
-        <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed">
-          <p>{post.description}</p>
         </div>
       </div>
     </div>
+  </div>
   );
 } 

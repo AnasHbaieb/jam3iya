@@ -21,7 +21,12 @@ export async function GET(
             );
         }
 
-        return NextResponse.json(contentPost);
+        return NextResponse.json({
+            ...contentPost,
+            category: contentPost.category,
+            date: contentPost.date ? new Date(contentPost.date).toISOString().split('T')[0] : null,
+            videoUrl: contentPost.videoUrl,
+        });
     } catch (error) {
         console.error('Error fetching content post:', error);
         return NextResponse.json(
@@ -44,12 +49,13 @@ export async function PUT(
         console.log('Received FormData:', Object.fromEntries(formData.entries()));
 
         const title = formData.get('title') as string;
+        const category = formData.get('category') as string | null;
         const description = formData.get('description') as string | null;
-        const shortDescription = formData.get('shortDescription') as string | null;
+        const date = formData.get('date') as string | null;
         const imageFile = formData.get('image') as File | null;
-        const secondaryImageFile = formData.get('secondaryImage') as File | null;
+        const videoFile = formData.get('video') as File | null;
 
-        console.log('Parsed values:', { id, title, description, shortDescription });
+        console.log('Parsed values:', { id, title, description, category, date });
 
         const existingContentPost: ContentPost | null = await prisma.contentPost.findUnique({
             where: { id },
@@ -66,7 +72,7 @@ export async function PUT(
         console.log('Existing content post:', existingContentPost);
 
         let imageUrl = existingContentPost.imageUrl;
-        let secondaryImageUrl = existingContentPost.secondaryImageUrl;
+        let videoUrl = existingContentPost.videoUrl;
 
         const s3Client = new S3Client({
             region: 'auto',
@@ -85,7 +91,8 @@ export async function PUT(
             
             const fileExtension = imageFile.name.split('.').pop();
             const uniqueFilename = `${uuidv4()}.${fileExtension}`;
-            const key = uniqueFilename;
+            const folder = 'content-posts-images';
+            const key = `${folder}/${uniqueFilename}`;
             
             const bytes = await imageFile.arrayBuffer();
             const buffer = Buffer.from(bytes);
@@ -102,37 +109,39 @@ export async function PUT(
             imageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
         }
 
-        // Process new secondary image upload if provided
-        if (secondaryImageFile && secondaryImageFile.name) {
-            // Delete old secondary image from S3 if it exists
+        // Process new video upload if provided
+        if (videoFile && videoFile.name) {
+            // Delete old video from S3 if it exists
             // For now, we will just overwrite with new upload. Realistically, you'd implement S3 delete.
 
-            const fileExtension = secondaryImageFile.name.split('.').pop();
-            const uniqueFilename = `${uuidv4()}-secondary.${fileExtension}`;
-            const key = uniqueFilename;
+            const fileExtension = videoFile.name.split('.').pop();
+            const uniqueFilename = `${uuidv4()}.${fileExtension}`;
+            const folder = 'content-posts-videos';
+            const key = `${folder}/${uniqueFilename}`;
             
-            const bytes = await secondaryImageFile.arrayBuffer();
+            const bytes = await videoFile.arrayBuffer();
             const buffer = Buffer.from(bytes);
             
             const command = new PutObjectCommand({
                 Bucket: 'uploads',
                 Key: key,
                 Body: buffer,
-                ContentType: secondaryImageFile.type,
+                ContentType: videoFile.type,
             });
             
             await s3Client.send(command);
             
-            secondaryImageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
+            videoUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
         }
 
         // Update the content post in the database
         const updateData = {
             title: title || existingContentPost.title,
+            category: category ?? existingContentPost.category,
             description: description ?? existingContentPost.description,
-            shortDescription: shortDescription ?? existingContentPost.shortDescription, // Use nullish coalescing for optional string
+            date: date ?? existingContentPost.date,
             imageUrl: imageUrl || existingContentPost.imageUrl,
-            secondaryImageUrl: secondaryImageUrl || existingContentPost.secondaryImageUrl,
+            videoUrl: videoUrl || existingContentPost.videoUrl,
         };
 
         const updatedContentPost = await prisma.contentPost.update({

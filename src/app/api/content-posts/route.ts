@@ -11,12 +11,13 @@ export async function POST(request: Request) {
     
     // Extract content post details from form data
     const title = formData.get('title') as string;
+    const category = formData.get('category') as string | null;
     const description = formData.get('description') as string | null;
-    const shortDescription = formData.get('shortDescription') as string | null;
+    const date = formData.get('date') as string | null;
     const imageFile = formData.get('image') as File;
-    const secondaryImageFile = formData.get('secondaryImage') as File;
+    const videoFile = formData.get('video') as File;
     let imageUrl: string | null = null;
-    let secondaryImageUrl: string | null = null;
+    let videoUrl: string | null = null;
     
     if (imageFile && imageFile.name) {
       // Initialize S3 client
@@ -33,7 +34,8 @@ export async function POST(request: Request) {
       // Create a unique filename
       const fileExtension = imageFile.name.split('.').pop();
       const uniqueFilename = `${uuidv4()}.${fileExtension}`;
-      const key = uniqueFilename;
+      const folder = 'content-posts-images';
+      const key = `${folder}/${uniqueFilename}`;
       
       // Convert file to buffer
       const bytes = await imageFile.arrayBuffer();
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
       imageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
     }
 
-    if (secondaryImageFile && secondaryImageFile.name) {
+    if (videoFile && videoFile.name) {
       const s3Client = new S3Client({
         region: 'auto',
         endpoint: `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/s3`,
@@ -64,31 +66,33 @@ export async function POST(request: Request) {
         forcePathStyle: true,
       });
 
-      const fileExtension = secondaryImageFile.name.split('.').pop();
-      const uniqueFilename = `${uuidv4()}-secondary.${fileExtension}`;
-      const key = uniqueFilename;
+      const fileExtension = videoFile.name.split('.').pop();
+      const uniqueFilename = `${uuidv4()}.${fileExtension}`;
+      const folder = 'content-posts-videos';
+      const key = `${folder}/${uniqueFilename}`;
       
-      const bytes = await secondaryImageFile.arrayBuffer();
+      const bytes = await videoFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
       const command = new PutObjectCommand({
         Bucket: 'uploads',
         Key: key,
         Body: buffer,
-        ContentType: secondaryImageFile.type,
+        ContentType: videoFile.type,
       });
       
       await s3Client.send(command);
       
-      secondaryImageUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
+      videoUrl = `https://${process.env.SUPABASE_PROJECT_REF}.supabase.co/storage/v1/object/public/uploads/${key}`;
     }
     
     const postData = {
       title,
+      category,
       description,
-      shortDescription,
+      date,
       imageUrl: imageUrl || null,
-      secondaryImageUrl: secondaryImageUrl || null
+      videoUrl: videoUrl || null
     };
     
     // Find the highest existing rang value
@@ -130,7 +134,9 @@ export async function GET() {
       return {
         ...post,
         imageUrl: finalImageUrl,
-        secondaryImageUrl: post.secondaryImageUrl
+        videoUrl: post.videoUrl,
+        category: post.category,
+        date: post.date
       };
     });
 
