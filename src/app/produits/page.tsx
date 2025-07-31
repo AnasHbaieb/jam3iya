@@ -68,8 +68,8 @@ export default function ProductsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* En-tête de la page avec titre et description */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">مشاريعنا</h1>
-            <p className="mt-2 text-gray-600 font-bold">
+            <h1 className="text-3xl font-bold text-amber-400">مشاريعنا</h1>
+            <p className="mt-2 text-white font-bold">
               اطلع على مختلف المشاريع الخيرية للجمعية
             </p>
           </div>
@@ -111,7 +111,7 @@ export default function ProductsPage() {
                     setSelectedCategory('جميع'); // Réinitialise la catégorie lors de la recherche
                   }
                 }}
-                className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right font-bold"
+                className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right font-bold placeholder-amber-500"
               />
             </div>
           </div>
