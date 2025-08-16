@@ -334,6 +334,7 @@ export default function EditProductPage() {
                           </label>
                         </div>
                         <p className="text-xs text-gray-500">PNG, JPG, GIF بحد أقصى 5MB</p>
+                        <p className="text-xs text-gray-500">أبعاد الصورة الموصى بها: 300x200 بكسل</p>
                       </>
                     )}
                   </div>
@@ -424,6 +425,7 @@ export default function EditProductPage() {
                           </label>
                         </div>
                         <p className="text-xs text-gray-500">PNG, JPG, GIF بحد أقصى 5MB</p>
+                        <p className="text-xs text-gray-500">أبعاد الصورة الموصى بها: 1200x800 بكسل</p>
                       </>
                     )}
                   </div>

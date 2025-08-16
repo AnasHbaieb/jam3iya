@@ -30,21 +30,90 @@ const images = [
   "/koft ram4an.jpg",
   "/ta7sin maskan.jpg",
   "/iftar saim.jpg",
-  // أضف المزيد من الصور حسب الحاجة
 ];
 
+// مكون عرض تفاصيل المشروع
+function ProjectDetailModal({ 
+  project, 
+  isOpen, 
+  onClose 
+}: { 
+  project: Product | null; 
+  isOpen: boolean; 
+  onClose: () => void; 
+}) {
+  if (!isOpen || !project) return null;
 
-// Page d'accueil de notre application
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="relative h-[70vh] w-full">
+          <Image 
+            src={project.imageUrl || project.secondaryImageUrl || '/default-image.jpg'}
+            alt={project.name}
+            fill
+            className="object-contain"
+          />
+        </div>
+        <div className="p-6">
+          <button 
+            onClick={onClose}
+            className="absolute top-2 left-2 text-white bg-red-600 rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold"
+          >
+            X
+          </button>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">{project.name}</h2>
+          <p className="text-gray-600 text-lg mb-4">{project.description}</p>
+          {project.category && (
+            <div className="inline-block bg-amber-600 text-white px-3 py-1 rounded-full text-sm mb-4">
+              {project.category}
+            </div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
+  const [images, setImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
-  const [contentPosts, setContentPosts] = useState<ContentPost[]>([]); // New state for content posts
+  const [contentPosts, setContentPosts] = useState<ContentPost[]>([]); 
+  const [selectedProject, setSelectedProject] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await fetch('/api/carousel-images');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setImages(data.map((img: { imageUrl: string }) => img.imageUrl));
+      } catch (error) {
+        console.error("Error fetching carousel images:", error);
+        // Remove this fallback if you are confident in API stability
+        // setImages(["/3id lkbir.jpg", "/7afr abar.jpg", "/kiswat il 3aid.jpg", "/mi7t itlmi4.jpg", "/koft ram4an.jpg", "/ta7sin maskan.jpg", "/iftar saim.jpg"]);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
+  useEffect(() => {
+    if (images.length === 0) return; // Don't start interval if no images
+
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
     }, 3000); // تغيير الصورة كل 3 ثواني
 
+    return () => clearInterval(interval);
+  }, [images]);
+
+  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/products');
@@ -63,7 +132,7 @@ export default function Home() {
 
     const fetchContentPosts = async () => {
       try {
-        const response = await fetch('/api/content-posts');
+        const response = await fetch('/api/content-posts?limit=2');
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'فشل في جلب المستجدات');
@@ -77,12 +146,51 @@ export default function Home() {
 
     fetchProducts();
     fetchContentPosts(); // Fetch content posts
+  }, []); // Moved clearInterval to the correct useEffect
+
+  // Auto-scrolling for projects
+  useEffect(() => {
+    const container = document.getElementById('projects-container');
+    if (!container || products.length === 0) return;
+
+    console.log('Container scrollWidth:', container.scrollWidth);
+    console.log('Container clientWidth:', container.clientWidth);
+    console.log('Container scrollLeft (initial):', container.scrollLeft);
+
+    const cardWidth = 288 + 24; // w-72 (288px) + gap-6 (24px)
+    const singleSetWidth = products.length * cardWidth; 
+
+    // Initialize scroll position to the beginning of the first set (visual right in RTL)
+    container.scrollLeft = 0; 
+
+    const scrollAmount = 1; // Adjust this value for scroll speed
+    const scrollInterval = 20; // Adjust this value for smoother animation
+
+    const interval = setInterval(() => {
+      // When scrollLeft goes beyond the logical end of the first set, reset to the start of the second.
+      if (container.scrollLeft >= singleSetWidth) {
+        container.scrollLeft = 0; // Reset to the beginning of the first set (visual right)
+      } else {
+        container.scrollLeft += scrollAmount; // Scroll to the left (increase scrollLeft)
+      }
+      console.log('Container scrollLeft (current):', container.scrollLeft);
+    }, scrollInterval);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [products]);
+
+  const handleProjectClick = (project: Product) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProject(null);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col" dir="rtl">
+    <div className="min-h-screen flex flex-col">
       <main className="flex-grow">
         <div className="relative z-50">
           {/*   <QuickDonate /> */}
@@ -90,70 +198,117 @@ export default function Home() {
         {/* Hero Section */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full flex flex-col items-center relative h-72 md:h-96">
-            <Image src={images[currentImageIndex]} alt="صورة متغيرة" fill style={{ objectFit: 'contain' }} priority={true} /> 
+            {images.length > 0 && (
+              <Image src={images[currentImageIndex]} alt="صورة متغيرة" fill style={{ objectFit: 'contain' }} priority={true} />
+            )}
           </div>
         </section>
-        <section className="py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-12 relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-8">
               مشاريعنا
             </h2>
-            <div className="relative">
-              <div className="flex items-center justify-between">
-                <button 
-                  onClick={() => {
-                    const container = document.getElementById('projects-container');
-                    if (container) container.scrollLeft -= 300;
-                  }}
-                  className="absolute left-0 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
-                >
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                
-                <div id="projects-container" className="flex overflow-x-auto scroll-smooth gap-6 py-4 px-8 hide-scrollbar ">
-                  {products.map((product) => (
-                    <div key={product.id} className="flex-none w-72">
-                      <div className="p-6 rounded-lg shadow-md bg-gray-100">
-                        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 relative overflow-hidden">
-                          {product.secondaryImageUrl ? (
-                            <Image
-                              src={product.secondaryImageUrl}
-                              alt={product.name}
-                              fill
-                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              style={{ objectFit: 'cover' }}
-                              className="rounded-full"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                              لا توجد صورة
-                            </div>
-                          )}
+            <div id="projects-container" className="flex flex-nowrap flex-row-reverse overflow-x-scroll scroll-auto hide-scrollbar gap-6 py-4 px-8 w-full" dir="rtl">
+              {products.map((product) => (
+                <div key={product.id} className="flex-none w-72 flex-shrink-0">
+                  <div 
+                    className="p-6 rounded-lg shadow-md bg-gray-100 cursor-pointer hover:shadow-lg transition-shadow duration-300 h-[250px]"
+                    onClick={() => handleProjectClick(product)}
+                  >
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 relative overflow-hidden">
+                      {product.secondaryImageUrl ? (
+                        <Image
+                          src={product.secondaryImageUrl}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          style={{ objectFit: 'cover' }}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          لا توجد صورة
                         </div>
-                        <h3 className="text-xl font-bold text-center mb-2">{product.name}</h3>
-                        <p className="text-gray-600 text-center text-sm">
-                          {product.shortDescription || product.description}
-                        </p>
-                      </div>
+                      )}
                     </div>
-                  ))}
+                    <h3 className="text-xl font-bold text-center mb-2">{product.name}</h3>
+                    <p className="text-gray-600 text-center text-sm">
+                      {product.shortDescription || product.description}
+                    </p>
+                  </div>
                 </div>
-
-                <button 
-                  onClick={() => {
-                    const container = document.getElementById('projects-container');
-                    if (container) container.scrollLeft += 300;
-                  }}
-                  className="absolute right-0 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
-                >
-                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
+              ))}
+              {/* Duplicate products for infinite scrolling */}
+              {products.map((product) => (
+                <div key={product.id + '-duplicate'} className="flex-none w-72 flex-shrink-0">
+                  <div 
+                    className="p-6 rounded-lg shadow-md bg-gray-100 cursor-pointer hover:shadow-lg transition-shadow duration-300 h-[250px]"
+                    onClick={() => handleProjectClick(product)}
+                  >
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 relative overflow-hidden">
+                      {product.secondaryImageUrl ? (
+                        <Image
+                          src={product.secondaryImageUrl}
+                          alt={product.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          style={{ objectFit: 'cover' }}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                          لا توجد صورة
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold text-center mb-2">{product.name}</h3>
+                    <p className="text-gray-600 text-center text-sm">
+                      {product.shortDescription || product.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
+            <button 
+              onClick={() => {
+                const container = document.getElementById('projects-container');
+                if (container) {
+                  const cardWidth = 288 + 24; // w-72 (288px) + gap-6 (24px)
+                  const singleSetWidth = products.length * cardWidth; 
+                  container.scrollLeft -= 300; // Decrease scrollLeft to move right
+
+                  // If we scroll too far right (before the start of the current set), jump back
+                  if (container.scrollLeft < 0) {
+                    container.scrollLeft = singleSetWidth + container.scrollLeft; // Adjust to wrap around
+                  }
+                }
+              }}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
+            >
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button 
+              onClick={() => {
+                const container = document.getElementById('projects-container');
+                if (container) {
+                  const cardWidth = 288 + 24; // w-72 (288px) + gap-6 (24px)
+                  const singleSetWidth = products.length * cardWidth; 
+                  container.scrollLeft += 300; // Increase scrollLeft to move left
+
+                  // If we scroll too far left (past the end of the current set), jump back
+                  if (container.scrollLeft >= singleSetWidth) {
+                    container.scrollLeft = container.scrollLeft - singleSetWidth; // Adjust to wrap around
+                  }
+                }
+              }}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
+            >
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
 
           <style jsx>{`
@@ -166,6 +321,13 @@ export default function Home() {
             }
           `}</style>
         </section>
+
+        {/* مكون عرض تفاصيل المشروع */}
+        <ProjectDetailModal 
+          project={selectedProject}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
         
         {/* قسم المستجدات */}
         {contentPosts.length > 0 && (
@@ -185,45 +347,62 @@ export default function Home() {
           ))}
         </div>
       )}
+      <div className="text-center mt-8">
+        <Link href="/new" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 transition-colors duration-300">
+          عرض المزيد من المستجدات
+        </Link>
+      </div>
     </div>
   </section>
 )}
-        {/* قسم الانخراط والتطوع */}
-        <section className="py-12">
-  <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+{/* قسم الانخراط والتطوع والتكفل */}
+<section className="py-12">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {/* بطاقة الانخراط */}
-      <div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60 bg-gray-100">
-        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-          {/* أيقونة انخراط (أشخاص/مجموعة) */}
-          <svg className="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition-all h-60 bg-gray-50">
+        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+          <svg className="w-10 h-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
-        <h3 className="text-xl font-bold mb-2">الانخراط</h3>
+        <h3 className="text-xl font-bold mb-2 text-gray-800">الانخراط</h3>
         <p className="text-gray-600">
-          كن جزءًا من عائلتنا وساهم في دعم الأطفال والأسر عبر الانخراط في الجمعية والاستفادة من برامجنا ومبادراتنا المختلفة.
+          كن جزءًا من عائلتنا وساهم في دعم الأطفال والأسر عبر الانخراط في الجمعية.
         </p>
       </div>
+
       {/* بطاقة التطوع */}
       <Link href="/tataw3" className="block">
-<div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition w-100 h-60 bg-gray-100">
-  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-    {/* أيقونة تطوع جديدة  */}
-    <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-    </svg>
-  </div>
-  <h3 className="text-xl font-bold mb-2">التطوع</h3>
-  <p className="text-gray-600">
-    شارك بوقتك وخبرتك وساعد في تحسين حياة الأطفال والأسر عبر برامجنا التطوعية المتنوعة.
-  </p>
-</div>
-</Link>
+        <div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition-all h-60 bg-gray-50">
+          <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold mb-2 text-gray-800">التطوع</h3>
+          <p className="text-gray-600">
+            شارك بوقتك وخبرتك وساعد في تحسين حياة الأطفال والأسر.
+          </p>
+        </div>
+      </Link>
+
+      {/* بطاقة التكفل باليتيم*/}
+      <div className="p-8 rounded-lg shadow-md flex flex-col items-center text-center hover:shadow-xl transition-all h-60 bg-gray-50 relative overflow-hidden">
+        
+        <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4">
+        <svg className="w-10 h-10 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        </div>
+        <h3 className="text-xl font-bold mb-2 text-gray-800">كفالة يتيم</h3>
+        <p className="text-gray-600">
+          تبنَّ كفالة يتيم وكن له سنداً وعائلة بديلة توفر له الرعاية والتعليم.
+        </p>
+      </div>
     </div>
   </div>
-         </section>
-
+</section>
       </main>
     </div>
   );

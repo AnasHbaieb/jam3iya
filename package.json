@@ -9,8 +9,7 @@
     "lint": "next lint",
     "db:seed": "ts-node prisma/seed.ts"
   },
-  "prisma": {
-  },
+  "prisma": {},
   "dependencies": {
     "@aws-sdk/client-s3": "^3.837.0",
     "@aws-sdk/s3-request-presigner": "^3.837.0",
@@ -42,6 +41,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-icons": "^3.0.0",
+    "@types/react-toastify": "^4.1.0",
     "dotenv": "^16.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",

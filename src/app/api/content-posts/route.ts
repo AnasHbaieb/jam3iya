@@ -120,13 +120,27 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const contentPosts: ContentPost[] = await prisma.contentPost.findMany({
-      orderBy: {
-        rang: 'asc'
-      }
-    });
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get('limit');
+
+    let contentPosts: ContentPost[];
+
+    if (limit) {
+      contentPosts = await prisma.contentPost.findMany({
+        orderBy: {
+          rang: 'desc',
+        },
+        take: parseInt(limit, 10),
+      });
+    } else {
+      contentPosts = await prisma.contentPost.findMany({
+        orderBy: {
+          rang: 'desc',
+        },
+      });
+    }
 
     // Ensure all image URLs are properly formatted for Supabase
     const formattedContentPosts = contentPosts.map(post => {
