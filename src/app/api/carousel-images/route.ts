@@ -10,9 +10,9 @@ export async function GET() {
     });
 
     return NextResponse.json(carouselImages, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching carousel images:', error);
-    return NextResponse.json({ message: 'Internal Server Error', error: error.message || 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ message: 'Internal Server Error', error: (error as Error).message || 'Unknown error' }, { status: 500 });
   }
 }
 
@@ -66,9 +66,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(newCarouselImage, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error uploading carousel image:', error);
-    return NextResponse.json({ message: 'Failed to upload image', error: error.message || 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ message: 'Failed to upload image', error: (error as Error).message || 'Unknown error' }, { status: 500 });
   }
 }
 
@@ -121,9 +121,9 @@ export async function PUT(request: Request) {
     });
 
     return NextResponse.json({ message: 'تم تحديث ترتيب الصورة بنجاح' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating carousel image order:', error);
-    return NextResponse.json({ message: 'فشل تحديث ترتيب الصورة', error: error.message || 'خطأ غير معروف' }, { status: 500 });
+    return NextResponse.json({ message: 'فشل تحديث ترتيب الصورة', error: (error as Error).message || 'خطأ غير معروف' }, { status: 500 });
   }
 }
 
@@ -169,8 +169,8 @@ export async function DELETE(request: Request) {
     });
 
     return NextResponse.json({ message: 'Image deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting carousel image:', error);
-    return NextResponse.json({ message: 'Failed to delete image', error: error.message || 'Unknown error' }, { status: 500 });
+    return NextResponse.json({ message: 'Failed to delete image', error: (error as Error).message || 'Unknown error' }, { status: 500 });
   }
 }

@@ -21,17 +21,6 @@ interface Product {
   rang: number;
 }
 
-// قائمة الصور
-const images = [
-  "/3id lkbir.jpg",
-  "/7afr abar.jpg",
-  "/kiswat il 3aid.jpg",
-  "/mi7t itlmi4.jpg",
-  "/koft ram4an.jpg",
-  "/ta7sin maskan.jpg",
-  "/iftar saim.jpg",
-];
-
 // مكون عرض تفاصيل المشروع
 function ProjectDetailModal({ 
   project, 

@@ -30,7 +30,7 @@ export default function CarouselAdminPage() {
       }
       const data = await response.json();
       setImages(data);
-    } catch (err) {
+    } catch {
       setError('Failed to fetch images.');
       toast.error('فشل جلب الصور.');
     } finally {
@@ -70,8 +70,8 @@ export default function CarouselAdminPage() {
       const fileInput = document.getElementById('imageUrl') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
       fetchImages();
-    } catch (err: any) {
-      toast.error(`فشل إضافة الصورة: ${err.message}`);
+    } catch (err: unknown) {
+      toast.error(`فشل إضافة الصورة: ${(err as Error).message}`);
     }
   };
 
@@ -91,7 +91,7 @@ export default function CarouselAdminPage() {
 
       toast.success('تم حذف الصورة بنجاح!');
       fetchImages();
-    } catch (err) {
+    } catch {
       toast.error('فشل حذف الصورة.');
     }
   };
@@ -112,7 +112,7 @@ export default function CarouselAdminPage() {
 
       toast.success('تم تحديث ترتيب الصورة بنجاح!');
       fetchImages(); // Refetch to show updated order
-    } catch (err) {
+    } catch {
       toast.error('فشل تحديث ترتيب الصورة.');
     }
   };
