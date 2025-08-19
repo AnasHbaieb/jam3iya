@@ -1,11 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
@@ -15,30 +9,30 @@ datasource db {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  imageUrl    String?
-  shortDescription String?
+  id                Int      @id @default(autoincrement())
+  name              String
+  description       String?
+  imageUrl          String?
+  shortDescription  String?
   secondaryImageUrl String?
-  category    String
-  rang        Int      @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt 
+  category          String
+  rang              Int      @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model ContentPost {
-  id                Int      @id @default(autoincrement())
-  title             String   @unique
-  category          String? 
-  description       String?
-  excerpt           String? // إضافة حقل excerpt
-  date              String?  
-  imageUrl          String?
-  videoUrl          String? 
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  rang              Int      @default(0)
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  description String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  rang        Int      @default(0)
+  category    String?
+  date        String?
+  excerpt     String?
+  videoUrl    String?
 }
 
 model CarouselImage {
@@ -57,50 +51,50 @@ model contactMessage {
   createdAt DateTime @default(now())
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
-  password    String
-  name        String?
-  role        Role     @default(USER)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt 
-}
-
-model PageContent {
   id        Int      @id @default(autoincrement())
-  pageName  String   @unique
-  content   String? // حقل جديد للمحتوى النصي المنسق
-  documents PageDocument[] // علاقة واحد إلى متعدد مع مستندات PDF
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model PageContent {
+  id        Int            @id @default(autoincrement())
+  pageName  String         @unique
+  content   String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  documents PageDocument[]
+}
+
 model PageDocument {
-  id          Int      @id @default(autoincrement())
-  title       String
-  url         String
-  pageContentId Int // مفتاح خارجي لربط المستند بـ PageContent
-  pageContent PageContent @relation(fields: [pageContentId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int         @id @default(autoincrement())
+  title         String
+  url           String
+  pageContentId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  pageContent   PageContent @relation(fields: [pageContentId], references: [id], onDelete: Cascade)
 }
 
 model VolunteerApplication {
-  id               Int      @id @default(autoincrement())
-  fullName         String
-  ageCategory      String
-  gender           String
-  phone            String
-  email            String   @unique
-  educationLevel   String
+  id                 Int      @id @default(autoincrement())
+  fullName           String
+  ageCategory        String
+  gender             String
+  phone              String
+  email              String   @unique
+  educationLevel     String
   previousExperience String?
-  organizationName String?
-  interestAreas    String[]
-  createdAt        DateTime @default(now())
+  organizationName   String?
+  interestAreas      String[]
+  createdAt          DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
 }

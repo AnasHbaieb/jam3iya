@@ -118,12 +118,12 @@ export default function CarouselAdminPage() {
   };
 
   if (loading) return <div className="text-center py-8">جاري التحميل...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">خطأ: {error}</div>;
+  if (error) return <div className="text-center py-8 text-red-500">خطأ: {error}</div>
 
   return (
     <div className="container mx-auto p-4">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-6">إدارة الكاروسيل</h1>
+      <h1 className="text-2xl font-bold mb-6">إدارة صور الواجهة</h1>
 
       <div className="mb-8 p-4 border rounded shadow-sm bg-white">
         <h2 className="text-xl font-semibold mb-4">إضافة صورة جديدة</h2>

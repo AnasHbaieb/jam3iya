@@ -258,46 +258,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <button 
-              onClick={() => {
-                const container = document.getElementById('projects-container');
-                if (container) {
-                  const cardWidth = 288 + 24; // w-72 (288px) + gap-6 (24px)
-                  const singleSetWidth = products.length * cardWidth; 
-                  container.scrollLeft -= 300; // Decrease scrollLeft to move right
-
-                  // If we scroll too far right (before the start of the current set), jump back
-                  if (container.scrollLeft < 0) {
-                    container.scrollLeft = singleSetWidth + container.scrollLeft; // Adjust to wrap around
-                  }
-                }
-              }}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
-            >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button 
-              onClick={() => {
-                const container = document.getElementById('projects-container');
-                if (container) {
-                  const cardWidth = 288 + 24; // w-72 (288px) + gap-6 (24px)
-                  const singleSetWidth = products.length * cardWidth; 
-                  container.scrollLeft += 300; // Increase scrollLeft to move left
-
-                  // If we scroll too far left (past the end of the current set), jump back
-                  if (container.scrollLeft >= singleSetWidth) {
-                    container.scrollLeft = container.scrollLeft - singleSetWidth; // Adjust to wrap around
-                  }
-                }
-              }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-lg hover:bg-gray-100"
-            >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+            
           </div>
 
           <style jsx>{`
@@ -355,7 +316,7 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
-        <h3 className="text-xl font-bold mb-2 text-gray-800">الانخراط</h3>
+        <h3 className="text-xl font-bold mb-2 text-gray-800">انخرط</h3>
         <p className="text-gray-600">
           كن جزءًا من عائلتنا وساهم في دعم الأطفال والأسر عبر الانخراط في الجمعية.
         </p>
@@ -369,7 +330,7 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800">التطوع</h3>
+          <h3 className="text-xl font-bold mb-2 text-gray-800">تطوع</h3>
           <p className="text-gray-600">
             شارك بوقتك وخبرتك وساعد في تحسين حياة الأطفال والأسر.
           </p>
@@ -384,7 +345,7 @@ export default function Home() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
         </div>
-        <h3 className="text-xl font-bold mb-2 text-gray-800">كفالة يتيم</h3>
+        <h3 className="text-xl font-bold mb-2 text-gray-800">اكفل يتيم</h3>
         <p className="text-gray-600">
           تبنَّ كفالة يتيم وكن له سنداً وعائلة بديلة توفر له الرعاية والتعليم.
         </p>
