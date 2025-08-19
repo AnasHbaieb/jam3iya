@@ -56,8 +56,11 @@ export function NewsCard({ post, index }: NewsCardProps) {
               <div className="text-center">
                 <div className="text-xl font-bold leading-none">
                   {(() => {
-                    const date = new Date(post.date);
-                    return new Intl.DateTimeFormat('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
+                    const dateObj = new Date(post.date);
+                    const year = dateObj.getFullYear();
+                    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+                    const day = dateObj.getDate().toString().padStart(2, '0');
+                    return `${year}/${month}/${day}`;
                   })()}
                 </div>
               </div>
