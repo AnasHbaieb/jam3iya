@@ -162,7 +162,7 @@ export default function Home() {
       } else {
         container.scrollLeft += scrollAmount; // Scroll to the left (increase scrollLeft)
       }
-      console.log('Container scrollLeft (current):', container.scrollLeft);
+    //  console.log('Container scrollLeft (current):', container.scrollLeft);
     }, scrollInterval);
 
     return () => clearInterval(interval);

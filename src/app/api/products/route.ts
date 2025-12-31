@@ -34,8 +34,7 @@ export async function POST(request: Request) {
       // Create a unique filename
       const fileExtension = imageFile.name.split('.').pop();
       const uniqueFilename = `${uuidv4()}.${fileExtension}`;
-      {/*const key = `projects-images/${uniqueFilename}`;*/}
-      const key = uniqueFilename;
+      const key = `projects-images/${uniqueFilename}`;
       
       // Convert file to buffer
       const bytes = await imageFile.arrayBuffer();

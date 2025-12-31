@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
   },
   images: {
-    domains: ['yvqdhlnwsuwsdscjxuvs.supabase.co'],
+    domains: ['rctbmdmtaqehxecuqfaa.supabase.co'],
   },
 };
 
